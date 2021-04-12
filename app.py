@@ -6,14 +6,26 @@ app = Flask(__name__)
 api = Api(app)
 
 
-def get(id):
-    artist = next(iter([x for x in artists if x["id"] == id]), None)
-    return {'artist': artist}, 200 if artist else 404
-
-
 class Artist(Resource):
+    '''
+    def __init__(self, data):
+        self.id = id
+        self.name = data['name']
+        self.country = data['country']
+        self.disciplines = data['disciplines']
 
-    def post(self, id):
+    def dump(self):
+        return {'id': self.id,
+                'name': self.name,
+                'country': self.country,
+                'disciplines': self.disciplines}
+    '''
+
+    def get(self, id):
+        artist = next(iter([x for x in artists if x["id"] == id]), None)
+        return {'artist': artist}, 200 if artist else 404
+
+    def post(self, id=None):
         parser = reqparse.RequestParser()  # create parameters parser from request
 
         # define all input parameters need and its type
@@ -24,8 +36,18 @@ class Artist(Resource):
                             action="append")  # action = "append" is needed to determine that is a list of strings
 
         data = parser.parse_args()
-        new_artist = Artist(data)
-        artists.append(new_artist)
+
+        if id is None:
+            id = artists[len(artists)-1]["id"]+1
+
+        if self.get(id) != 404:
+            # new_artist = Artist(data)
+            artists.append({'id': id,
+                            'name': data['name'],
+                            'country': data['country'],
+                            'disciplines': data['disciplines']})
+        else:
+            return {'message': "Artist with id [{}] already exists".format(id)}
 
     def delete(self, id):
         return {'message': "Not developed yet"}, 404
@@ -34,7 +56,7 @@ class Artist(Resource):
         return {'message': "Not developed yet"}, 404
 
 
-api.add_resource(Artist, '/artist/<int:id>')
+api.add_resource(Artist, '/artist/<int:id>', '/artist')
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(port=5000, debug=False)
