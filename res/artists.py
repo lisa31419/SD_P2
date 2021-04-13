@@ -1,14 +1,66 @@
 from flask_restful import reqparse, Resource
 
-from data import artists
+from res.data import artists
 
 
 class Artist(Resource):
+    """
+    def __init__(self, data):
+        self.id = id
+        self.name = data['name']
+        self.country = data['country']
+        self.disciplines = data['disciplines']
+
+    def dump(self):
+        return {'id': self.id,
+                'name': self.name,
+                'country': self.country,
+                'disciplines': self.disciplines}
+    """
+
     def get(self, id):
         artist = next(iter([x for x in artists if x["id"] == id]), None)
-        return {'artist': artist}, 200 if artist else 404
+        if artist is not None:
+            return {'artist': artist}, 200
+        else:
+            return 404
 
-    def post(self, id):
+    def post(self, id=None):
+        data = self.getData()
+
+        if id is None:
+            id = artists[len(artists) - 1]["id"] + 1
+
+        if self.get(id) == 404:
+            # new_artist
+            artists.append({'id': id,
+                            'name': data['name'],
+                            'country': data['country'],
+                            'disciplines': data['disciplines']})
+            return {'message': "Artist with id [{}] added correctly".format(id)}
+        else:
+            return {'message': "Artist with id [{}] already exists".format(id)}
+
+    def delete(self, id):
+        if id is None or self.get(id) == 404:
+            return {'message': "Id must be in the list"}, 404
+        artists.pop(id)
+        return {'message': "Artist with id [{}] deleted correctly".format(id)}
+
+    def put(self, id=None):
+        data = self.getData()
+
+        if self.get(id) == 404:
+            self.post(id)
+            return {'message': "Artist with id [{}] will be created".format(id)}
+        else:
+            artists[id] = {'id': id,
+                           'name': data['name'],
+                           'country': data['country'],
+                           'disciplines': data['disciplines']}
+            return {'message': "Artist with id [{}] updated".format(id)}
+
+    def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
 
         # define all input parameters need and its type
@@ -19,10 +71,4 @@ class Artist(Resource):
                             action="append")  # action = "append" is needed to determine that is a list of strings
 
         data = parser.parse_args()
-        return {'message': "Not developed yet"}, 404
-
-    def delete(self, id):
-        return {'message': "Not developed yet"}, 404
-
-    def put(self, id):
-        return {'message': "Not developed yet"}, 404
+        return data
