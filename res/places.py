@@ -1,9 +1,9 @@
 from flask_restful import reqparse, Resource
 
-from data import places
+from res.data import places
 
 
-class Places(Resource):
+class Place(Resource):
     def get(self, id):
         place = next(iter([x for x in places if x["id"] == id]), None)
         if place is not None:
@@ -34,31 +34,29 @@ class Places(Resource):
         places.pop(id)
         return {'message': "Place with id [{}] deleted correctly".format(id)}
 
+    def put(self, id):
+        data = self.getData()
 
-def put(self, id):
-    data = self.getData()
+        if self.get(id) == 404:
+            self.post(id)
+            return {'message': "Place with id [{}] will be created".format(id)}
+        else:
+            places[id] = {'id': id,
+                          'name': data['name'],
+                          'city': data['city'],
+                          'country': data['country'],
+                          'capacity': data['capacity']}
+            return {'message': "Place with id [{}] updated".format(id)}
 
-    if self.get(id) == 404:
-        self.post(id)
-        return {'message': "Place with id [{}] will be created".format(id)}
-    else:
-        places[id] = {'id': id,
-                      'name': data['name'],
-                      'city': data['city'],
-                      'country': data['country'],
-                      'capacity': data['capacity']}
-        return {'message': "Place with id [{}] updated".format(id)}
+    def getData(self):
+        parser = reqparse.RequestParser()  # create parameters parser from request
 
+        # define all input parameters need and its type
 
-def getData(self):
-    parser = reqparse.RequestParser()  # create parameters parser from request
+        parser.add_argument('name', type=str, required=True, help="This field cannot be left blanck")
+        parser.add_argument('city', type=str)
+        parser.add_argument('country', type=str)
+        parser.add_argument('capacity', type=int)
 
-    # define all input parameters need and its type
-
-    parser.add_argument('name', type=str, required=True, help="This field cannot be left blanck")
-    parser.add_argument('city', type=str)
-    parser.add_argument('country', type=str)
-    parser.add_argument('capacity', type=int)
-
-    data = parser.parse_args()
-    return data
+        data = parser.parse_args()
+        return data

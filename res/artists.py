@@ -1,6 +1,6 @@
 from flask_restful import reqparse, Resource
 
-from data import artists
+from res.data import artists
 
 
 class Artist(Resource):
