@@ -23,7 +23,10 @@ class Artist(Resource):
 
     def get(self, id):
         artist = next(iter([x for x in artists if x["id"] == id]), None)
-        return {'artist': artist}, 200 if artist else 404
+        if artist is not None:
+            return {'artist': artist}, 200
+        else:
+            return 404
 
     def post(self, id=None):
         parser = reqparse.RequestParser()  # create parameters parser from request
@@ -38,14 +41,15 @@ class Artist(Resource):
         data = parser.parse_args()
 
         if id is None:
-            id = artists[len(artists)-1]["id"]+1
+            id = artists[len(artists) - 1]["id"] + 1
 
-        if self.get(id) != 404:
-            # new_artist = Artist(data)
+        if self.get(id) == 404:
+            # new_artist
             artists.append({'id': id,
                             'name': data['name'],
                             'country': data['country'],
                             'disciplines': data['disciplines']})
+            return {'message': "Artist with id [{}] added correctly".format(id)}
         else:
             return {'message': "Artist with id [{}] already exists".format(id)}
 
