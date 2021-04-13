@@ -11,7 +11,7 @@ class Show(Resource):
         else:
             return 404
 
-    def post(self, id):
+    def post(self, id=None):
         data = self.getData()
 
         if id is None:
