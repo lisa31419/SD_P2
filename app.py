@@ -6,7 +6,13 @@ from res.artists import Artist
 from res.places import Place
 from res.shows import Show
 
+from res.db import db
+
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 api = Api(app)
 
 api.add_resource(Artist, '/artist/<int:id>', '/artist')
