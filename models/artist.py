@@ -10,7 +10,7 @@ class ArtistModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(30), unique=True, nullable=False)
     country = db.Column(db.String(30), nullable=False)
-    discipline = db.Column(db.Enum(*disciplines), nullable=False)
+    discipline = db.Column(db.PickleType(comparator=db.Enum(*disciplines)), nullable=False)
 
     def __init__(self, name, country, discipline):
         self.name = name
