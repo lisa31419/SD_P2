@@ -10,7 +10,7 @@ class PlaceModel(db.Model):
     city = db.Column(db.String(30), nullable=False)
     country = db.Column(db.String(30), nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
-    show_id = db.Column(db.Integer, db.ForeignKey('shows.id'), nullable=False)
+    # show_id = db.Column(db.Integer, db.ForeignKey('shows.id'), nullable=False)
 
     def __init__(self, name, city, country, capacity):
         self.name = name

@@ -6,7 +6,6 @@ artists_in_shows = db.Table('artists_in_shows',
                             db.Column('show_id', db.Integer, db.ForeignKey('shows.id')))
 
 
-
 class ShowModel(db.Model):
     __tablename__ = 'shows'  # This is table name
     __table_args__ = (db.UniqueConstraint('name', 'date', 'price'),)  # Extracted comma
@@ -18,7 +17,8 @@ class ShowModel(db.Model):
 
     artists = db.relationship("ArtistModel", secondary=artists_in_shows, backref=db.backref('shows'))
 
-    place = db.relationship("PlaceModel", backref='shows')  # Revisar el Many to One
+    place_id = db.Column(db.Integer, db.ForeignKey('places.id'))
+    place = db.relationship("PlaceModel")
 
     def __init__(self, name, date, price):
         self.name = name
