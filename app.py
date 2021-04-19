@@ -1,15 +1,12 @@
 from flask import Flask, jsonify
-from flask_restful import Api
 from flask_migrate import Migrate
+from flask_restful import Api
 
-from res.data import artists, places, shows
 from res.artists import Artist
+from res.data import artists, places, shows
+from res.db import db
 from res.places import Place
 from res.shows import Show
-from models.artist import ArtistModel
-from models.show import ShowModel  #also import table created with many-to-many relationship
-
-from res.db import db
 
 app = Flask(__name__)
 

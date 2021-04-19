@@ -16,6 +16,7 @@ class ShowModel(db.Model):
     price = db.Column(db.Float, nullable=False)
 
     artists = db.relationship("ArtistModel", secondary=artists_in_shows, backref=db.backref('shows'))
+
     # place = db.relationship("ShowModel", db.backref('places'))  # Revisar el Many to One
 
     def __init__(self, name, date, price):
