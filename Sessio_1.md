@@ -318,14 +318,14 @@ from flask_restful import Resource, Api, reqparse  # add reqparse to imports
 ```
 
 ```python
-parser = reqparse.RequestParser()  #create parameters parser from request
+parser = reqparse.RequestParser()  # create parameters parser from request
 
-#define all input parameters need and its type
+# define all input parameters need and its type
 
 parser.add_argument('name', type=str, required=True, help="This field cannot be left blanck")
 parser.add_argument('country', type=str)
 parser.add_argument('discipline', type=str,
-                    action="append")  #action = "append" is needed to determine that is a list of strings
+                    action="append")  # action = "append" is needed to determine that is a list of strings
 
 data = parser.parse_args()
 ```
