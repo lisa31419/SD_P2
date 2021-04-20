@@ -1,50 +1,35 @@
 from flask_restful import reqparse, Resource
 
-from res.data import artists
+from res.db import db
+from models.artist import ArtistModel
 
 
 class Artist(Resource):
-    """
-    def __init__(self, data):
-        self.id = id
-        self.name = data['name']
-        self.country = data['country']
-        self.disciplines = data['disciplines']
-
-    def dump(self):
-        return {'id': self.id,
-                'name': self.name,
-                'country': self.country,
-                'disciplines': self.disciplines}
-    """
+    def artistas(self):
+        return db.session.query_property(ArtistModel)
 
     def get(self, id):
-        artist = next(iter([x for x in artists if x["id"] == id]), None)
+        artist = ArtistModel.find_by_id(id)
         if artist is not None:
-            return {'artist': artist}, 200
+            return {'artist': artist.json()}, 200
         else:
             return 404
 
     def post(self, id=None):
         data = self.getData()
 
-        if id is None:
-            id = artists[len(artists) - 1]["id"] + 1
-
         if self.get(id) == 404:
-            # new_artist
-            artists.append({'id': id,
-                            'name': data['name'],
-                            'country': data['country'],
-                            'disciplines': data['disciplines']})
-            return {'message': "Artist with id [{}] added correctly".format(id)}
+            new_artist = ArtistModel(data['name'], data['country'], data['disciplines'])
+            new_artist.save_to_db()
+            return {'message': "Artist added correctly"}
         else:
             return {'message': "Artist with id [{}] already exists".format(id)}
 
     def delete(self, id):
         if id is None or self.get(id) == 404:
             return {'message': "Id must be in the list"}, 404
-        artists.pop(id)
+        artists_to_delete = ArtistModel.find_by_id(id)
+        artists_to_delete.delete_from_db()
         return {'message': "Artist with id [{}] deleted correctly".format(id)}
 
     def put(self, id=None):
@@ -54,10 +39,11 @@ class Artist(Resource):
             self.post(id)
             return {'message': "Artist with id [{}] will be created".format(id)}
         else:
-            artists[id] = {'id': id,
-                           'name': data['name'],
-                           'country': data['country'],
-                           'disciplines': data['disciplines']}
+            artist_to_update = ArtistModel.find_by_id(id)
+            artist_to_update.name = data['name']
+            artist_to_update.country = data['country']
+            #artist_to_update.disciplines = data['disciplines']
+            db.session.commit()
             return {'message': "Artist with id [{}] updated".format(id)}
 
     def getData(self):
