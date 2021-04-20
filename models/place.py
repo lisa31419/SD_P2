@@ -1,13 +1,5 @@
-from flask import jsonify
-
-from res.data import places
 from res.db import db
 
-'''
-class PlaceList:
-    def placesList(self):
-        return jsonify([str(x) for x in places])
-'''
 
 class PlaceModel(db.Model):
     __tablename__ = 'places'  # This is table name
@@ -18,6 +10,7 @@ class PlaceModel(db.Model):
     city = db.Column(db.String(30), nullable=False)
     country = db.Column(db.String(30), nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
+
     # show_id = db.Column(db.Integer, db.ForeignKey('shows.id'), nullable=False)
 
     def __init__(self, name, city, country, capacity):
@@ -41,3 +34,11 @@ class PlaceModel(db.Model):
     @classmethod
     def find_by_id(cls, id):
         return cls.query.get(id)
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def length(cls):
+        return cls.query.count()

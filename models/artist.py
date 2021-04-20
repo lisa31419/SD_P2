@@ -1,15 +1,7 @@
-from flask import jsonify
-
-from res.data import artists
 from res.db import db
 
 disciplines = ('THEATRE', 'MUSIC', 'DANCE', 'CIRCUS', 'OTHER')
 
-'''
-class ArtistList:
-    def artistsList(self):
-        return jsonify([str(x) for x in artists])
-'''
 
 class DisciplineModel(db.Model):
     __tablename__ = 'disciplines'
@@ -47,3 +39,11 @@ class ArtistModel(db.Model):
     @classmethod
     def find_by_id(cls, id):
         return cls.query.get(id)
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def length(cls):
+        return cls.query.count()

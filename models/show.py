@@ -1,19 +1,12 @@
-from flask import jsonify
-
-from res.data import shows
-from res.db import db
 import dateutil.parser
+
+from res.db import db
 
 artists_in_shows = db.Table('artists_in_shows',
                             db.Column('id', db.Integer, primary_key=True),
                             db.Column('artist_id', db.Integer, db.ForeignKey('artists.id')),
                             db.Column('show_id', db.Integer, db.ForeignKey('shows.id')))
 
-'''
-class ShowList:
-    def showsList(self):
-        return jsonify([str(x) for x in shows])
-'''
 
 class ShowModel(db.Model):
     __tablename__ = 'shows'  # This is table name
@@ -24,20 +17,19 @@ class ShowModel(db.Model):
     date = db.Column(db.DateTime(), nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    artists = db.relationship("ArtistModel", secondary=artists_in_shows, backref=db.backref('shows'))
+    # artists = db.relationship("ArtistModel", secondary=artists_in_shows, backref=db.backref('shows'))
 
     # place_id = db.Column(db.Integer, db.ForeignKey('places.id'))
     # place = db.relationship("PlaceModel")
 
     def __init__(self, name, date, price):
         self.name = name
-        self.date = date
+        self.date = dateutil.parser.parse(date)
         self.price = price
 
     def json(self):
         formatted_datetime = self.date.isoformat()
-        jsondate = dateutil.parser.parse(formatted_datetime)
-        return {'id': self.id, 'name': self.name, 'date': jsondate,
+        return {'id': self.id, 'name': self.name, 'date': formatted_datetime,
                 'price': self.price}
 
     def save_to_db(self):
@@ -51,3 +43,11 @@ class ShowModel(db.Model):
     @classmethod
     def find_by_id(cls, id):
         return cls.query.get(id)
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def length(cls):
+        return cls.query.count()

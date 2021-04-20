@@ -1,13 +1,20 @@
+from flask import jsonify
 from flask_restful import reqparse, Resource
 
-from res.data import places
+from models.place import PlaceModel
+from res.db import db
+
+
+class PlaceList(Resource):
+    def get(self):
+        return jsonify([x.json() for x in PlaceModel.get_all()])
 
 
 class Place(Resource):
     def get(self, id):
-        place = next(iter([x for x in places if x["id"] == id]), None)
+        place = PlaceModel.find_by_id(id)
         if place is not None:
-            return {'place': place}, 200
+            return {'place': place.json()}, 200
         else:
             return 404
 
@@ -15,23 +22,24 @@ class Place(Resource):
         data = self.getData()
 
         if id is None:
-            id = places[len(places) - 1]["id"] + 1
+            id = PlaceModel.legth() + 1
 
         if self.get(id) == 404:
-            # new_place
-            places.append({'id': id,
-                           'name': data['name'],
-                           'city': data['city'],
-                           'country': data['country'],
-                           'capacity': data['capacity']})
-            return {'message': "Place with id [{}] added correctly".format(id)}
+            new_place = PlaceModel(data['name'], data['city'], data['country'], data['capacity'])
+            try:
+                new_place.save_to_db()
+                return {'message': "Place with id [{}] added correctly".format(id)}
+            except:
+                return {"message": "An error occurred inserting the place."}, 500
+
         else:
             return {'message': "Place with id [{}] already exists".format(id)}
 
     def delete(self, id):
         if id is None or self.get(id) == 404:
             return {'message': "Id must be in the list"}, 404
-        places.pop(id)
+        place_to_delete = PlaceModel.find_by_id(id)
+        place_to_delete.delete_from_db()
         return {'message': "Place with id [{}] deleted correctly".format(id)}
 
     def put(self, id):
@@ -41,12 +49,16 @@ class Place(Resource):
             self.post(id)
             return {'message': "Place with id [{}] will be created".format(id)}
         else:
-            places[id] = {'id': id,
-                          'name': data['name'],
-                          'city': data['city'],
-                          'country': data['country'],
-                          'capacity': data['capacity']}
-            return {'message': "Place with id [{}] updated".format(id)}
+            place_to_update = PlaceModel.find_by_id(id)
+            place_to_update.name = data['name']
+            place_to_update.city = data['city']
+            place_to_update.country = data['country']
+            place_to_update.capacity = data['capacity']
+            try:
+                db.session.commit()
+                return {'message': "Place with id [{}] updated".format(id)}
+            except:
+                return {'message': "Error while commiting changes"}
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request

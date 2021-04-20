@@ -1,9 +1,10 @@
+from datetime import datetime
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from models.artist import ArtistModel
 from models.show import ShowModel
-from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'

@@ -1,12 +1,16 @@
+from flask import jsonify
 from flask_restful import reqparse, Resource
 
-from res.db import db
 from models.artist import ArtistModel
+from res.db import db
+
+
+class ArtistList(Resource):
+    def get(self):
+        return jsonify([x.json() for x in ArtistModel.get_all()])
 
 
 class Artist(Resource):
-    def artistas(self):
-        return db.session.query_property(ArtistModel)
 
     def get(self, id):
         artist = ArtistModel.find_by_id(id)
@@ -18,10 +22,17 @@ class Artist(Resource):
     def post(self, id=None):
         data = self.getData()
 
+        if id is None:
+            id = ArtistModel.length() + 1
+
         if self.get(id) == 404:
             new_artist = ArtistModel(data['name'], data['country'], data['disciplines'])
-            new_artist.save_to_db()
-            return {'message': "Artist added correctly"}
+            try:
+                new_artist.save_to_db()
+                return {'message': "Artist with id [{}] added correctly".format(id)}
+            except:
+                return {"message": "An error occurred inserting the artist."}, 500
+
         else:
             return {'message': "Artist with id [{}] already exists".format(id)}
 
@@ -42,9 +53,12 @@ class Artist(Resource):
             artist_to_update = ArtistModel.find_by_id(id)
             artist_to_update.name = data['name']
             artist_to_update.country = data['country']
-            #artist_to_update.disciplines = data['disciplines']
-            db.session.commit()
-            return {'message': "Artist with id [{}] updated".format(id)}
+            # artist_to_update.disciplines = data['disciplines']
+            try:
+                db.session.commit()
+                return {'message': "Artist with id [{}] updated".format(id)}
+            except:
+                return {'message': "Error while commiting changes"}
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
