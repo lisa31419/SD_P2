@@ -74,7 +74,9 @@ class Artist(Resource):
         return data
 
 
+'''
 #TODO Mirar como pillar en que shows esta el artista
 class ArtistShowsLists(Resource):
     def get(self, id):
         return jsonify([x.json() for x in ArtistModel.find_by_id(id)])
+'''

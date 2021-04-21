@@ -75,7 +75,9 @@ class PlaceList(Resource):
         return jsonify([x.json() for x in PlaceModel.get_all()])
 
 
+'''
 #TODO Mirar como pillar en que shows esta el place
 class PlaceShowsList(Resource):
     def get(self):
         return jsonify([x.json() for x in ShowModel.get_showsInThisPlace()])
+'''

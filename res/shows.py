@@ -2,7 +2,9 @@ import dateutil
 from flask import jsonify
 from flask_restful import reqparse, Resource
 
+from models.artist import ArtistModel
 from models.show import ShowModel
+from res.artists import Artist
 from res.db import db
 
 
@@ -74,18 +76,51 @@ class ShowList(Resource):
         return jsonify([x.json() for x in ShowModel.get_all()])
 
 
-# TODO Mirar como pillar los artistas
 class ShowArtistsList(Resource):
     def get(self, id):
-        return jsonify([x.json() for x in ShowModel.find_by_id(id)])
+        artists_in_show = ShowModel.find_by_id(id).artists
+        if artists_in_show:
+            return [x.json() for x in artists_in_show], 200
+        else:
+            return {"message": "There are no artists in this show."}, 404
 
 
 class ShowArtist(Resource):
     def get(self, id_show, id_artist):
-        return jsonify([x.json() for x in ShowModel.find_by_id(id_show) if x.id == id_artist])
+        artists_in_show = ShowModel.find_by_id(id_show).artists
+        artist_found = [x.json() for x in artists_in_show if x.id == id_artist]
+        if artist_found:
+            return {'artist': artist_found}, 200
+        else:
+            return {"message": "There are no artists with id [{}] in this show.".format(id_artist)}, 404
 
     def post(self, id_show, id_artist=None):
+        #data = Artist.getData(self)
+        show_found = ShowModel.find_by_id(id_show)
+        artists_in_show = show_found.artists
+        if id_artist is None:
+            id_artist = ArtistModel.length() + 1
 
+        if ArtistModel.find_by_id(id_artist) is None:
+            #new_artist = ArtistModel(data['name'], data['country'], data['disciplines'])
+            try:
+                #new_artist.save_to_db()
+                #artists_in_show.append(new_artist)
+                #db.session.commit()
+                return {'message': "Artist with id [{}] created and added correctly to the show.".format(id_artist)}
+            except:
+                return {"message": "An error occurred inserting the new artist into the show."}, 500
+
+        else:
+            artist_found = ArtistModel.find_by_id(id_artist)
+            try:
+                artists_in_show.append(artist_found)
+                show_found.save_to_db()
+                return {'message': "Artist with id [{}] added correctly to the show.".format(id_artist)}
+            except:
+                return {"message": "An error occurred inserting the artist into the show."}, 500
+
+
+'''
     def delete(self, id_show, id_artist):
-
-
+'''
