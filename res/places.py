@@ -76,8 +76,18 @@ class PlaceList(Resource):
 
 
 '''
-#TODO Mirar como pillar en que shows esta el place
 class PlaceShowsList(Resource):
     def get(self):
-        return jsonify([x.json() for x in ShowModel.get_showsInThisPlace()])
+        shows = ShowModel.get_all()
+        shows_in_place = []
+        for show in shows:
+            places_in_show = show.places
+            for place in places_in_show:
+                if place.id == id:
+                    shows_in_place.append(place)
+
+        if shows_in_place:
+            return [x.json() for x in shows_in_place], 200
+        else:
+            return {"message": "There are no shows performed in this place."}, 404
 '''
