@@ -2,7 +2,7 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_restful import Api
 
-from res.artists import Artist, ArtistList
+from res.artists import Artist, ArtistList, ArtistShowsList
 from res.db import db
 from res.places import Place, PlaceList
 from res.shows import Show, ShowList, ShowArtistsList, ShowArtist
@@ -19,7 +19,7 @@ api = Api(app)
 
 api.add_resource(Artist, '/artist/<int:id>', '/artist')
 api.add_resource(ArtistList, '/artists')
-#api.add_resource(ArtistShowsList, '/artist/<int:id>/shows')
+api.add_resource(ArtistShowsList, '/artist/<int:id>/shows')
 
 api.add_resource(Show, '/show/<int:id>', '/show')
 api.add_resource(ShowList, '/shows')

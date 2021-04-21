@@ -44,7 +44,6 @@ class Show(Resource):
         except:
             return {'message': "Error while deleting the show"}, 500
 
-
     def put(self, id):
         data = self.getData()
 
@@ -112,7 +111,8 @@ class ShowArtist(Resource):
                 # new_artist.save_to_db()
                 # artists_in_show.append(new_artist)
                 # show_found.save_to_db()
-                return {'message': "Artist with id [{}] created and added correctly to the show.".format(id_artist)}, 200
+                return {'message': "Artist with id [{}] created and added correctly to the show.".format(
+                    id_artist)}, 200
             except:
                 return {"message": "An error occurred inserting the new artist into the show."}, 500
 

@@ -2,6 +2,7 @@ from flask import jsonify
 from flask_restful import reqparse, Resource
 
 from models.artist import ArtistModel
+from models.show import ShowModel
 from res.db import db
 
 
@@ -74,9 +75,17 @@ class Artist(Resource):
         return data
 
 
-'''
-#TODO Mirar como pillar en que shows esta el artista
-class ArtistShowsLists(Resource):
+class ArtistShowsList(Resource):
     def get(self, id):
-        return jsonify([x.json() for x in ArtistModel.find_by_id(id)])
-'''
+        shows = ShowModel.get_all()
+        shows_played_by_artist = []
+        for show in shows:
+            artists_in_show = show.artists
+            for artist in artists_in_show:
+                if artist.id == id:
+                    shows_played_by_artist.append(show)
+
+        if shows_played_by_artist:
+            return [x.json() for x in shows_played_by_artist], 200
+        else:
+            return {"message": "There are no shows played by this artist."}, 404
