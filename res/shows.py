@@ -37,8 +37,12 @@ class Show(Resource):
         if id is None or self.get(id) == 404:
             return {'message': "Id must be in the list"}, 404
         show_to_delete = ShowModel.find_by_id(id)
-        show_to_delete.delete_from_db()
-        return {'message': "Show with id [{}] deleted correctly".format(id)}
+        try:
+            show_to_delete.delete_from_db()
+            return {'message': "Show with id [{}] deleted correctly".format(id)}
+        except:
+            return {'message': "Error while deleting the artist"}, 500
+
 
     def put(self, id):
         data = self.getData()
@@ -127,7 +131,7 @@ class ShowArtist(Resource):
         if artist_to_delete:
             artist_to_delete = ArtistModel.find_by_id(id_artist)
             artists_in_show.remove(artist_to_delete)
-            show_found.delete_from_db()
+            show_found.save_to_db()
             return {'message': "Artist with id [{}] deleted correctly from the show".format(id_artist)}, 200
         else:
             return {'message': "Artist must be in the show"}, 404
