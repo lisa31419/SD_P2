@@ -14,7 +14,7 @@ class Show(Resource):
         if show is not None:
             return {'show': show.json()}, 200
         else:
-            return {"message": "An error occurred finding the show."}, 404
+            return 404
 
     def post(self, id=None):
         data = self.getData()
@@ -37,11 +37,12 @@ class Show(Resource):
         if id is None or self.get(id) == 404:
             return {'message': "Id must be in the list"}, 404
         show_to_delete = ShowModel.find_by_id(id)
+
         try:
             show_to_delete.delete_from_db()
             return {'message': "Show with id [{}] deleted correctly".format(id)}
         except:
-            return {'message': "Error while deleting the artist"}, 500
+            return {'message': "Error while deleting the show"}, 500
 
 
     def put(self, id):

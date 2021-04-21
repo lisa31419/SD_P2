@@ -17,7 +17,7 @@ class Artist(Resource):
         if artist is not None:
             return {'artist': artist.json()}, 200
         else:
-            return {"message": "An error occurred finding the artist."}, 404
+            return 404
 
     def post(self, id=None):
         data = self.getData()

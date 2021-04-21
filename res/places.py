@@ -12,7 +12,7 @@ class Place(Resource):
         if place is not None:
             return {'place': place.json()}, 200
         else:
-            return {"message": "An error occurred finding the place."}, 404
+            return 404
 
     def post(self, id=None):
         data = self.getData()
