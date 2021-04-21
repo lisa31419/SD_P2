@@ -11,8 +11,34 @@ class PlaceModel(db.Model):
     country = db.Column(db.String(30), nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
 
+    # show_id = db.Column(db.Integer, db.ForeignKey('shows.id'), nullable=False)
+
     def __init__(self, name, city, country, capacity):
         self.name = name
         self.city = city
         self.country = country
         self.capacity = capacity
+
+    def json(self):
+        return {'id': self.id, 'name': self.name, 'city': self.city,
+                'country': self.country, 'capacity': self.capacity}
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    @classmethod
+    def find_by_id(cls, id):
+        return cls.query.get(id)
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def length(cls):
+        return cls.query.count()

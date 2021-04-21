@@ -1,3 +1,5 @@
+import dateutil.parser
+
 from res.db import db
 
 artists_in_shows = db.Table('artists_in_shows',
@@ -17,9 +19,39 @@ class ShowModel(db.Model):
 
     artists = db.relationship("ArtistModel", secondary=artists_in_shows, backref=db.backref('shows'))
 
-    # place = db.relationship("ShowModel", db.backref('places'))  # Revisar el Many to One
+    # place_id = db.Column(db.Integer, db.ForeignKey('places.id'))
+    # place = db.relationship("PlaceModel")
 
     def __init__(self, name, date, price):
         self.name = name
-        self.date = date
+        self.date = dateutil.parser.parse(date)
         self.price = price
+
+    def json(self):
+        formatted_datetime = self.date.isoformat()
+        return {'id': self.id, 'name': self.name, 'date': formatted_datetime,
+                'price': self.price}
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    @classmethod
+    def find_by_id(cls, id):
+        return cls.query.get(id)
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def length(cls):
+        return cls.query.count()
+
+    @classmethod
+    def getArtists(cls):
+        return artists_in_shows
