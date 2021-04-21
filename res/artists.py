@@ -17,7 +17,7 @@ class Artist(Resource):
         if artist is not None:
             return {'artist': artist.json()}, 200
         else:
-            return 404
+            return {"message": "An error occurred finding the artist."}, 404
 
     def post(self, id=None):
         data = self.getData()
@@ -72,3 +72,9 @@ class Artist(Resource):
 
         data = parser.parse_args()
         return data
+
+
+#TODO Mirar como pillar en que shows esta el artista
+class ArtistShowsLists(Resource):
+    def get(self, id):
+        return jsonify([x.json() for x in ArtistModel.find_by_id(id)])

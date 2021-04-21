@@ -2,12 +2,8 @@ from flask import jsonify
 from flask_restful import reqparse, Resource
 
 from models.place import PlaceModel
+from models.show import ShowModel
 from res.db import db
-
-
-class PlaceList(Resource):
-    def get(self):
-        return jsonify([x.json() for x in PlaceModel.get_all()])
 
 
 class Place(Resource):
@@ -16,7 +12,7 @@ class Place(Resource):
         if place is not None:
             return {'place': place.json()}, 200
         else:
-            return 404
+            return {"message": "An error occurred finding the place."}, 404
 
     def post(self, id=None):
         data = self.getData()
@@ -72,3 +68,14 @@ class Place(Resource):
 
         data = parser.parse_args()
         return data
+
+
+class PlaceList(Resource):
+    def get(self):
+        return jsonify([x.json() for x in PlaceModel.get_all()])
+
+
+#TODO Mirar como pillar en que shows esta el place
+class PlaceShowsList(Resource):
+    def get(self):
+        return jsonify([x.json() for x in ShowModel.get_showsInThisPlace()])

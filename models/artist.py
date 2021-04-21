@@ -47,3 +47,5 @@ class ArtistModel(db.Model):
     @classmethod
     def length(cls):
         return cls.query.count()
+
+

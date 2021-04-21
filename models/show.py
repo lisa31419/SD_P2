@@ -17,7 +17,7 @@ class ShowModel(db.Model):
     date = db.Column(db.DateTime(), nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    # artists = db.relationship("ArtistModel", secondary=artists_in_shows, backref=db.backref('shows'))
+    artists = db.relationship("ArtistModel", secondary=artists_in_shows, backref=db.backref('shows'))
 
     # place_id = db.Column(db.Integer, db.ForeignKey('places.id'))
     # place = db.relationship("PlaceModel")
@@ -51,3 +51,7 @@ class ShowModel(db.Model):
     @classmethod
     def length(cls):
         return cls.query.count()
+
+    @classmethod
+    def getArtists(cls):
+        return artists_in_shows
