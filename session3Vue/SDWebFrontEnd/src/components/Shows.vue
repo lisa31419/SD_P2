@@ -1,11 +1,32 @@
 <template>
   <div id="app">
-    <h1> {{ message }} </h1>
+    <!--h1> {{ message }} </h1>
     <button class="btn btn-success btn-lg" @click="buyTickets"> Buy ticket </button>
     <button class="btn btn-success btn-lg" @click="returnTickets"> Return Ticket </button>
-    <h4> Total tickets bought: {{ tickets_bought }} </h4>
-    <h4> Price for Event: {{ price_event }} </h4>
+    <h4> Total tickets bought: {{ tickets_bought }} </h4-->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4" v-for="(show) in shows" :key="show.id">
+          <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src="static/TempEx6.PNG" alt="Card image cap">
+            <div class="card-body">
+              <br>
+              <h4>{{ show.name }}</h4>
+              <div v-for="(artist) in show.artists" :key="artist.id">
+                <h5>{{ artist.name }}</h5>
+              </div>
+              <h6>{{ show.city }}</h6>
+              <h6>{{ show.place }}</h6>
+              <h6>{{ show.date }}</h6>
+              <h6>{{ show.price }} €</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--h4> Price for Event: {{ price_event }} </h4>
     <h4> Money available: {{ money_available }} </h4>
+  </div-->
   </div>
 </template>
 
@@ -17,7 +38,57 @@ export default {
       message: 'My first component',
       tickets_bought: 0,
       price_event: 10,
-      money_available: 200
+      money_available: 200,
+      shows: [
+        {
+          name: 'Festival Cruilla 2020',
+          artists: [
+            {
+              'name': 'Bad Gyal'
+            },
+            {
+              'name': 'Txarango'
+            },
+            {
+              'name': 'Estopa'
+            }
+          ],
+          city: 'Barcelona',
+          place: 'Parc del Forum',
+          date: '2020-07-03',
+          price: 100
+        },
+        {
+          name: 'Canet Rock 2020',
+          artists: [
+            {
+              'name': 'Txarango'
+            },
+            {
+              'name': 'Dvicio'
+            },
+            {
+              'name': 'Lola Indigo'
+            }
+          ],
+          city: 'Barcelona',
+          place: 'Parc del Forum',
+          date: '2020-07-05',
+          price: 24
+        },
+        {
+          name: 'Iron Maiden Tour',
+          artists: [
+            {
+              'name': 'Iron Maiden'
+            }
+          ],
+          city: 'Barcelona',
+          place: 'Sant Jordi',
+          date: '2020-08-22',
+          price: 70
+        }
+      ]
     }
   },
   methods: {
