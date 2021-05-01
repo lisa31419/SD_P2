@@ -9,7 +9,7 @@
         <div class="row">
           <div class="col-lg-4 col-md-6 mb-4" v-for="(show) in shows" :key="show.id">
             <div class="card text-center" style="width: 18rem;">
-              <img class="card-img-top" src="static/image2.jpeg" alt="Card image cap">
+              <img class="card-img-top" src="static/image1.jpeg" alt="Card image cap">
               <h4 class="card-header text-center"><b>{{ show.name }}</b></h4>
               <div class="card-body">
                 <div v-for="(artist) in show.artists" :key="artist.id">
@@ -127,10 +127,10 @@ export default {
         .catch((error) => {
           console.error(error)
         })
-    },
-    created () {
-      this.getShows()
     }
+  },
+  created () {
+    this.getShows()
   }
 }
 </script>
