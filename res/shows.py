@@ -21,7 +21,7 @@ class Show(Resource):
             id = ShowModel.length() + 1
 
         if self.get(id) == 404:
-            new_show = ShowModel(data['name'], data['date'], data['price'])
+            new_show = ShowModel(data['name'], data['date'], data['price'], data['total_available_tickets'])
             try:
                 new_show.save_to_db()
                 return {'message': "Show with id [{}] added correctly".format(id)}
@@ -53,6 +53,7 @@ class Show(Resource):
             show_to_update.name = data['name']
             show_to_update.date = dateutil.parser.parse(data['date'])
             show_to_update.price = data['price']
+            show_to_update.total_available_tickets = data['total_available_tickets ']
             db.session.commit()
             return {'message': "Show with id [{}] updated".format(id)}
 
@@ -64,6 +65,7 @@ class Show(Resource):
         parser.add_argument('name', type=str, required=True, help="This field cannot be left blanck")
         parser.add_argument('date', type=str)
         parser.add_argument('price', type=float)
+        parser.add_argument('total_available_tickets', type=int)
         parser.add_argument('place', type=str,
                             action="append")  # action = "append" is needed to determine that is a list of strings
         parser.add_argument('artist', type=str,

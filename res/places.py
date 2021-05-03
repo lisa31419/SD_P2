@@ -2,7 +2,6 @@ from flask import jsonify
 from flask_restful import reqparse, Resource
 
 from models.place import PlaceModel
-from models.show import ShowModel
 from res.db import db
 
 

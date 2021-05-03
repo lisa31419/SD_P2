@@ -46,7 +46,6 @@ export default {
     return {
       message: 'My first component',
       tickets_bought: 0,
-      tickets_available: 100,
       price_event: 10,
       money_available: 200,
       shows: [
@@ -66,7 +65,8 @@ export default {
           city: 'Barcelona',
           place: 'Parc del Forum',
           date: '2020-07-03',
-          price: 100
+          price: 100,
+          tickets_available: 100
         },
         {
           name: 'Canet Rock 2020',
@@ -84,7 +84,8 @@ export default {
           city: 'Barcelona',
           place: 'Parc del Forum',
           date: '2020-07-05',
-          price: 24
+          price: 24,
+          tickets_available: 100
         },
         {
           name: 'Iron Maiden Tour',
@@ -96,7 +97,8 @@ export default {
           city: 'Barcelona',
           place: 'Sant Jordi',
           date: '2020-08-22',
-          price: 70
+          price: 70,
+          tickets_available: 100
         }
       ],
       shows_added: []

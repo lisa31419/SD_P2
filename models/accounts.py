@@ -6,8 +6,7 @@ class AccountsModel(db.Model):
 
     username = db.Column(db.String(30), primary_key=True, unique=True, nullable=False)
     password = db.Column(db.String(), nullable=False)
-    # 0 not admin/ 1 is admin
-    is_admin = db.Column(db.Integer, nullable=False)
+    is_admin = db.Column(db.Integer, nullable=False)  # 0 not admin / 1 is admin
     available_money = db.Column(db.Integer)
     orders = db.relationship('OrdersModel', backref='orders', lazy=True)
 
@@ -30,3 +29,6 @@ class AccountsModel(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    @classmethod
+    def find_by_username(cls, username):
+        return cls.query.get(username)
