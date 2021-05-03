@@ -1,10 +1,8 @@
 import dateutil
-from flask import jsonify
 from flask_restful import reqparse, Resource
 
 from models.artist import ArtistModel
 from models.show import ShowModel
-from res.artists import Artist
 from res.db import db
 
 
@@ -77,7 +75,7 @@ class Show(Resource):
 
 class ShowList(Resource):
     def get(self):
-        return jsonify([x.json() for x in ShowModel.get_all()])
+        return {'shows': [x.json() for x in ShowModel.get_all()]}
 
 
 class ShowArtistsList(Resource):
