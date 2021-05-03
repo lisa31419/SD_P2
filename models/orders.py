@@ -13,9 +13,13 @@ class OrdersModel(db.Model):
         self.id_show = id_show
         self.tickets_bought = tickets_bought
 
+    def json(self):
+        return {'id': self.id, 'username': self.username, 'id_show': self.id_show,
+                'tickets_bought': self.tickets_bought}
+
     @classmethod
-    def find_by_username(cls, username):
-        return cls.query.get(username)
+    def find_by_id(cls, id):
+        return cls.query.get(id)
 
     @classmethod
     def get_all(cls):
