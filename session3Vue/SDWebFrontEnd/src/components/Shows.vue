@@ -1,16 +1,66 @@
 <template>
   <div id="app">
     <body style="background-color:lightgrey;">
-    <button class='btn btn-success pull-left' @click="goToCart()"> Cart </button>
+    <div v-if=isShowingCart class...>
+      <!-- Displaying in case button go to Cart True-->
+      <div class="container center-h center-v">
+        <div class="row">
+          <div class="col-sm-10">
+            <h1 class="card-header text-center"><b>Cart</b></h1>
+            <hr>
+            <br>
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th scope="col">Event Name</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total Price</th>
+                <th scope="col">Total Tickets</th>
+                <th scope="col"></th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              <div v-for="(show) in shows_added" :key="show.id">
+                <tr>
+                  <td>{{ show[0].name }}</td>
+                  <td>{{tickets_bought}}
+                    <div class="btn-group" role="group">
+                      <button class="btn btn-danger btn-lg mr-1" @click="returnTickets(show)"> -</button>
+                      <button class="btn btn-success btn-lg" @click="buyTickets(show)"> +</button>
+                    </div>
+                  </td>
+                  <td>{{ show[0].price }}</td>
+                  <td>{{tickets_bought*show[0].price}}</td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <button class="btn btn-danger btn-md" type="button" @click="deleteEventFromCart(show)">Delete Ticket</button>
+                    </div>
+                  </td>
+                </tr>
+              </div>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer" style="text-align: center;">
+        <button class="btn btn-danger btn-lg down-left" @click="goToShows()"> Back</button>
+        <button class="btn btn-success btn-lg down-right"> Finalize Purchase</button>
+      </div>
+    </div>
+    <!-- Show the shows when button is deactivated-->
+    <div v-else class...>
+      <button class='btn btn-success pull-left' @click="goToCart()"> Cart</button>
       <!--h1> {{ message }} </h1>
       <button class="btn btn-success btn-lg" @click="buyTickets"> Buy ticket </button>
       <button class="btn btn-success btn-lg" @click="returnTickets"> Return Ticket </button>
       <h4> Total tickets bought: {{ tickets_bought }} </h4-->
       <div class="container ">
         <div class="row">
-          <div class="col-lg-4 col-md-6 mb-4" v-for="(show) in shows" :key="show.id">
+          <div v-for="(show) in shows" :key="show.id" class="col-lg-4 col-md-6 mb-4">
             <div class="card text-center" style="width: 18rem;">
-              <img class="card-img-top" src="static/image1.jpeg" alt="Card image cap">
+              <img alt="Card image cap" class="card-img-top" src="static/image1.jpeg">
               <h4 class="card-header text-center"><b>{{ show.name }}</b></h4>
               <div class="card-body">
                 <div v-for="(artist) in show.artists" :key="artist.id">
@@ -25,17 +75,18 @@
             <div class="card text-white bg-dark mb-3 text-center" style="max-width: 18rem;">
               <div class="card-body">
                 <h4> Tickets available: {{ tickets_available }} </h4>
-                <button class="btn btn-success btn-lg" @click="addEventToCart(show)"> Add show to cart </button>
+                <button class="btn btn-success btn-lg" @click="addEventToCart(show)"> Add show to cart</button>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
     </body>
-  </div>
     <!--h4> Price for Event: {{ price_event }} </h4>
     <h4> Money available: {{ money_available }} </h4>
   </div-->
+  </div>
 </template>
 
 <script>
@@ -48,6 +99,7 @@ export default {
       message: 'My first component',
       tickets_bought: 0,
       price_event: 10,
+      indexShowCart: 0,
       money_available: 200,
       shows: [
         {
@@ -102,27 +154,40 @@ export default {
           tickets_available: 100
         }
       ],
-      shows_added: []
+      shows_added: [],
+      isShowingCart: false
     }
   },
   methods: {
     goToCart () {
-      this.$router.push({name: 'CartPage'})
+      // this.$router.push({name: 'CartPage'})
+      this.isShowingCart = true
     },
-    buyTickets () {
+    goToShows () {
+      this.isShowingCart = false
+    },
+    buyTickets (tickets) {
       if (this.money_available !== 0) {
+        // tickets[1] += 1
         this.tickets_bought += 1
-        this.money_available -= this.price_event
+        this.money_available -= tickets[0].price
       }
     },
-    returnTickets () {
+    returnTickets (tickets) {
       if (this.tickets_bought !== 0) {
+        // tickets[1] -= 1
         this.tickets_bought -= 1
-        this.money_available += this.price_event
+        this.money_available += tickets[0].price
       }
     },
     addEventToCart (show) {
-      this.shows_added.push(show)
+      this.shows_added.push([show, 1, this.indexShowCart])
+      this.indexShowCart += 1
+    },
+    deleteEventFromCart (show) {
+      this.shows_added.pop(show[2])
+      this.indexShowCart -= 1
+      // Arreglar esto
     },
     getShows () {
       const path = 'http://localhost:5000/shows'
