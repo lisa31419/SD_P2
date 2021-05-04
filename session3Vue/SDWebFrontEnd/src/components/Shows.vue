@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <body style="background-color:lightgrey;">
-    <div v-if=isShowingCart class...>
+    <div v-if="isShowingCart && shows_added.length > 0"  class...>
       <!-- Displaying in case button go to Cart True-->
       <div class="container center-h center-v">
         <div class="row">
@@ -21,24 +21,22 @@
               </tr>
               </thead>
               <tbody>
-              <div v-for="(show) in shows_added" :key="show.id">
-                <tr>
-                  <td>{{ show[0].name }}</td>
-                  <td>{{tickets_bought}}
+              <tr v-for="(show) in shows_added" :key="show.id">
+                  <td>{{ show['show'].name }}</td>
+                  <td>{{show['quantity']}}
                     <div class="btn-group" role="group">
                       <button class="btn btn-danger btn-lg mr-1" @click="returnTickets(show)"> -</button>
                       <button class="btn btn-success btn-lg" @click="buyTickets(show)"> +</button>
                     </div>
                   </td>
-                  <td>{{ show[0].price }}</td>
-                  <td>{{tickets_bought*show[0].price}}</td>
+                  <td>{{ show['show'].price }}</td>
+                  <td>{{show['quantity']*show['show'].price}}</td>
                   <td>
                     <div class="btn-group" role="group">
                       <button class="btn btn-danger btn-md" type="button" @click="deleteEventFromCart(show)">Delete Ticket</button>
                     </div>
                   </td>
                 </tr>
-              </div>
               </tbody>
             </table>
           </div>
@@ -49,6 +47,7 @@
         <button class="btn btn-success btn-lg down-right"> Finalize Purchase</button>
       </div>
     </div>
+    <div v-else-if="shows_added.length === 0">Your cart is currently empty.</div>
     <!-- Show the shows when button is deactivated-->
     <div v-else class...>
       <button class='btn btn-success pull-left' @click="goToCart()"> Cart</button>
@@ -75,7 +74,7 @@
             <div class="card text-white bg-dark mb-3 text-center" style="max-width: 18rem;">
               <div class="card-body">
                 <h4> Tickets available: {{ tickets_available }} </h4>
-                <button class="btn btn-success btn-lg" @click="addEventToCart(show)"> Add show to cart</button>
+                <button class="btn btn-success btn-lg" @click="addEventToCart(show); this.disabled=true;"> Add show to cart</button>
               </div>
             </div>
           </div>
@@ -99,8 +98,7 @@ export default {
       message: 'My first component',
       tickets_bought: 0,
       price_event: 10,
-      indexShowCart: 0,
-      money_available: 200,
+      money_available: 100000000,
       shows: [
         {
           name: 'Festival Cruilla 2020',
@@ -165,28 +163,25 @@ export default {
     },
     goToShows () {
       this.isShowingCart = false
+      this.shows_added = []
     },
     buyTickets (tickets) {
-      if (this.money_available !== 0) {
-        // tickets[1] += 1
-        this.tickets_bought += 1
-        this.money_available -= tickets[0].price
+      if (this.money_available >= tickets['show'].price) {
+        tickets['quantity'] += 1
+        this.money_available -= tickets['show'].price
       }
     },
     returnTickets (tickets) {
-      if (this.tickets_bought !== 0) {
-        // tickets[1] -= 1
-        this.tickets_bought -= 1
-        this.money_available += tickets[0].price
+      if (tickets['quantity'] > 0) {
+        tickets['quantity'] -= 1
+        this.money_available += tickets['show'].price
       }
     },
     addEventToCart (show) {
-      this.shows_added.push([show, 1, this.indexShowCart])
-      this.indexShowCart += 1
+      this.shows_added.push({'show': show, 'quantity': 0})
     },
     deleteEventFromCart (show) {
-      this.shows_added.pop(show[2])
-      this.indexShowCart -= 1
+      this.shows_added.remove(show)
       // Arreglar esto
     },
     getShows () {
