@@ -10,27 +10,30 @@ artists_in_shows = db.Table('artists_in_shows',
 
 class ShowModel(db.Model):
     __tablename__ = 'shows'  # This is table name
-    __table_args__ = (db.UniqueConstraint('name', 'date', 'price'),)  # Extracted comma
+    __table_args__ = (db.UniqueConstraint('name', 'date', 'price', 'total_available_tickets'),)  # Extracted comma
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(30), unique=True, nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
     price = db.Column(db.Float, nullable=False)
+    total_available_tickets = db.Column(db.Integer)
 
     artists = db.relationship("ArtistModel", secondary=artists_in_shows, backref=db.backref('shows'))
 
+    # places = db.relationship('PlaceModel', backref='places', lazy=True)
     # place_id = db.Column(db.Integer, db.ForeignKey('places.id'))
     # place = db.relationship("PlaceModel")
 
-    def __init__(self, name, date, price):
+    def __init__(self, name, date, price, total_available_tickets):
         self.name = name
         self.date = dateutil.parser.parse(date)
         self.price = price
+        self.total_available_tickets = total_available_tickets
 
     def json(self):
         formatted_datetime = self.date.isoformat()
         return {'id': self.id, 'name': self.name, 'date': formatted_datetime,
-                'price': self.price}
+                'price': self.price, 'total_available_tickets': self.total_available_tickets}
 
     def save_to_db(self):
         db.session.add(self)
