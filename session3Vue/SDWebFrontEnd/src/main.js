@@ -15,8 +15,8 @@ const router = new VueRouter({
   mode: 'history',
   base: __dirname,
   routes: [
-    { path: '/', component: Shows },
-    { path: '/cart', component: Cart }
+    { path: '/', name: 'ShowsPage', component: Shows },
+    { path: '/cart/', name: 'CartPage', component: Cart }
   ]
 })
 

@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <body style="background-color:lightgrey;">
+    <button class='btn btn-success pull-left' @click="goToCart()"> Cart </button>
       <!--h1> {{ message }} </h1>
       <button class="btn btn-success btn-lg" @click="buyTickets"> Buy ticket </button>
       <button class="btn btn-success btn-lg" @click="returnTickets"> Return Ticket </button>
@@ -105,6 +106,9 @@ export default {
     }
   },
   methods: {
+    goToCart () {
+      this.$router.push({name: 'CartPage'})
+    },
     buyTickets () {
       if (this.money_available !== 0) {
         this.tickets_bought += 1
