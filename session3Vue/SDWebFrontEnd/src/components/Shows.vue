@@ -2,7 +2,7 @@
   <div id="app">
     <body style="background-color:lightgrey;">
     <!-- Displaying in case button go to Cart True-->
-    <div v-if="isShowingCart"  class...>
+    <div v-if="isShowingCart" class...>
       <!-- Show nothing id cart is empty-->
       <div v-if="shows_added.length > 0">
         <div class="container center-h center-v">
@@ -25,14 +25,14 @@
                 <tbody>
                 <tr v-for="(show) in shows_added" :key="show.id">
                   <td>{{ show['show'].name }}</td>
-                  <td>{{show['quantity']}}
+                  <td>{{ show['quantity'] }}
                     <div class="btn-group" role="group">
                       <button class="btn btn-danger btn-lg mr-1" @click="returnTickets(show)">-</button>
                       <button class="btn btn-success btn-lg" @click="buyTickets(show)">+</button>
                     </div>
                   </td>
                   <td>{{ show['show'].price }}</td>
-                  <td>{{show['quantity']*show['show'].price}}</td>
+                  <td>{{ show['quantity'] * show['show'].price }}</td>
                   <td>
                     <button class="btn btn-danger btn-md" @click="deleteEventFromCart(show)">Delete Ticket</button>
                   </td>
@@ -86,10 +86,9 @@
             <div class="card text-white bg-dark mb-3 text-center" style="max-width: 18rem;">
               <div class="card-body">
                 <h4> Tickets available: {{ show.total_available_tickets }} </h4>
-                <button class="btn btn-success btn-lg" @click="addEventToCart(show)" :disabled="just_shows.includes(show)"> Add show to cart </button>
-                <h6>{{ just_shows.includes(show) }}</h6>
-                <h6>{{ just_shows }}</h6>
-                <h6>{{ just_shows.indexOf(show) }}</h6>
+                <button :disabled="just_shows.includes(show)" class="btn btn-success btn-lg"
+                        @click="addEventToCart(show)"> Add show to cart
+                </button>
               </div>
             </div>
           </div>
