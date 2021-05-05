@@ -208,6 +208,8 @@ export default {
       axios.post(path, parameters)
         .then(() => {
           console.log('Order done')
+          this.shows_added = []
+          this.just_shows = []
         })
         .catch((error) => {
           // eslint-disable-next-line
