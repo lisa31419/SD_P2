@@ -201,11 +201,16 @@ export default {
     deleteEventFromCart (show) {
       this.index = this.just_shows.indexOf(show)
       this.shows_added = this.shows_added.filter(x => {
-        return x !== show.name
+        return x.index !== this.index
       })
-      this.just_shows = this.just_shows.filter(x => {
-        return x.id_show !== show.id_show
-      })
+      /* this.just_shows = this.just_shows.filter(x => {
+        return x.toString() !== show.toString()
+      }) */
+      for (let i = 0; i < this.just_shows.length; i++) {
+        if (i === this.index) {
+          this.just_shows.splice(i, 1)
+        }
+      }
       // Funciona a medias, resetea tot
     },
     addPurchase (parameters) {
