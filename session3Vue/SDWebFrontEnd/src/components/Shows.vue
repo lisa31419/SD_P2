@@ -85,7 +85,7 @@
             </div>
             <div class="card text-white bg-dark mb-3 text-center" style="max-width: 18rem;">
               <div class="card-body">
-                <h4> Tickets available: {{ tickets_available }} </h4>
+                <h4> Tickets available: {{ show.total_available_tickets }} </h4>
                 <button class="btn btn-success btn-lg" @click="addEventToCart(show)" :disabled="just_shows.includes(show)"> Add show to cart </button>
                 <h6>{{ just_shows.includes(show) }}</h6>
                 <h6>{{ just_shows }}</h6>
@@ -132,7 +132,7 @@ export default {
           place: 'Parc del Forum',
           date: '2020-07-03',
           price: 100,
-          tickets_available: 100
+          total_available_tickets: 100
         },
         {
           name: 'Canet Rock 2020',
@@ -151,7 +151,7 @@ export default {
           place: 'Parc del Forum',
           date: '2020-07-05',
           price: 24,
-          tickets_available: 100
+          total_available_tickets: 100
         },
         {
           name: 'Iron Maiden Tour',
@@ -164,7 +164,7 @@ export default {
           place: 'Sant Jordi',
           date: '2020-08-22',
           price: 70,
-          tickets_available: 100
+          total_available_tickets: 100
         }
       ],
       shows_added: [],
@@ -199,19 +199,9 @@ export default {
       }
     },
     deleteEventFromCart (show) {
-      this.index = this.just_shows.indexOf(show)
-      this.shows_added = this.shows_added.filter(x => {
-        return x.index !== this.index
-      })
-      /* this.just_shows = this.just_shows.filter(x => {
-        return x.toString() !== show.toString()
-      }) */
-      for (let i = 0; i < this.just_shows.length; i++) {
-        if (i === this.index) {
-          this.just_shows.splice(i, 1)
-        }
-      }
-      // Funciona a medias, resetea tot
+      let indice = this.just_shows.indexOf(show)
+      this.just_shows.splice(indice, 1)
+      this.shows_added.splice(indice, 1)
     },
     addPurchase (parameters) {
       const path = 'http://localhost:5000/order/test'
@@ -226,10 +216,10 @@ export default {
         })
     },
     finalizePurchase () {
-      for (let i = 0; i < this.shows_added.items.length; i += 1) {
+      for (let i = 0; i < this.shows_added.length; i += 1) {
         const parameters = {
-          id_show: this.shows_added.items[i].show.id,
-          tickets_bought: this.shows_added.items[i].quantity
+          id_show: this.shows_added[i].show.id,
+          tickets_bought: this.shows_added[i].quantity
         }
         this.addPurchase(parameters)
       }

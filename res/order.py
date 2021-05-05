@@ -22,7 +22,6 @@ class Orders(Resource):
 
         if user is not None:
 
-            if self.get(username) == 404:
                 show = ShowModel.find_by_id(id_show)
                 shows_price = show.price
                 available_tickets = show.total_available_tickets
@@ -47,8 +46,6 @@ class Orders(Resource):
                         return {"message": "An error occurred inserting the order."}, 500
                 else:
                     return {"message": "You don't have enough money or there aren't tickets left."}
-            else:
-                return {'message': "Order already exists."}
         else:
             return {'message': "User does not exist."}
 
