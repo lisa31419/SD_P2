@@ -63,3 +63,43 @@ class Orders(Resource):
 class OrdersList(Resource):
     def get(self):
         return [x.json() for x in OrdersModel.get_all()]
+
+    def post(self, username, param):
+
+        user = AccountsModel.find_by_username(username)
+
+        if user is not None:
+
+            for order in param:
+                data = self.getData()
+                id_show = data['id_show']
+                tickets_bought = data['tickets_bought']
+
+                show = ShowModel.find_by_id(id_show)
+                shows_price = show.price
+                available_tickets = show.total_available_tickets
+                users_money = user.available_money
+
+                if shows_price < users_money and available_tickets > 0:
+                    try:
+                        show.total_available_tickets = available_tickets - 1
+                        users_money -= (shows_price * tickets_bought)
+                        user.available_money = users_money
+                        new_order = OrdersModel(id_show, tickets_bought)
+                        print("he pasado el new_order")
+                        user.orders.append(new_order)
+                        print("he pasado el user append")
+                        # es posible que falte un db.session.add(self) cambiando self por algo
+                        db.session.add(new_order)
+                        db.session.commit()
+                        print("he pasado el commit")
+                        return {'order': new_order.json()}
+                    except:
+                        db.session.rollback()
+                        return {"message": "An error occurred inserting the order."}, 500
+                else:
+                    return {"message": "You don't have enough money or there aren't tickets left."}
+        else:
+            return {'message': "User does not exist."}
+
+

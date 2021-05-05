@@ -62,7 +62,8 @@
     </div>
     <!-- Show the shows when button is deactivated-->
     <div v-else class...>
-      <button class='btn btn-success pull-left' @click="goToCart()"> Cart</button>
+      <button class='button buttonCart bg-dark' @click="goToCart()"> <h3>Go To Cart</h3></button>
+      <br><br>
       <!--h1> {{ message }} </h1>
       <button class="btn btn-success btn-lg" @click="buyTickets"> Buy ticket </button>
       <button class="btn btn-success btn-lg" @click="returnTickets"> Return Ticket </button>
@@ -198,12 +199,12 @@ export default {
       }
     },
     deleteEventFromCart (show) {
-      let indice = this.just_shows.indexOf(show)
+      let indice = this.shows_added.indexOf(show)
       this.just_shows.splice(indice, 1)
       this.shows_added.splice(indice, 1)
     },
     addPurchase (parameters) {
-      const path = 'http://localhost:5000/order/test'
+      const path = 'http://localhost:5000/orders/test/'
       axios.post(path, parameters)
         .then(() => {
           console.log('Order done')
@@ -217,13 +218,15 @@ export default {
         })
     },
     finalizePurchase () {
+      let tempList = []
       for (let i = 0; i < this.shows_added.length; i += 1) {
         const parameters = {
           id_show: this.shows_added[i].show.id,
           tickets_bought: this.shows_added[i].quantity
         }
-        this.addPurchase(parameters)
+        tempList.push(parameters)
       }
+      this.addPurchase(tempList)
     },
     getShows () {
       const path = 'http://localhost:5000/shows'
@@ -241,3 +244,20 @@ export default {
   }
 }
 </script>
+
+<style>
+.button {
+  background-color: #555555; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.buttonCart {width: 100%;}
+</style>

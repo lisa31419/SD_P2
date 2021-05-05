@@ -39,7 +39,7 @@ api.add_resource(PlaceList, '/places')
 # api.add_resource(PlaceShowsList, '/place/<int:id>/shows')
 
 api.add_resource(Orders, '/order/<string:username>')
-api.add_resource(OrdersList, '/orders')
+api.add_resource(OrdersList, '/orders', '/orders/<string:username>/')
 
 
 @app.route('/')
