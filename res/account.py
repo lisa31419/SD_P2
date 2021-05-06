@@ -20,9 +20,11 @@ class Accounts(Resource):
         if self.get(username) == 404:
             try:
                 new_user = AccountsModel(username)
-                AccountsModel.hash_password(password)
+                print("wfwggw")
+                new_user.hash_password(password)
+                print("wfwggw")
                 new_user.save_to_db()
-                return {'message': "User [{}] added correctly".format(username)}
+                return new_user.json()
             except:
                 return {"message": "An error occurred inserting the user."}, 500
 
@@ -58,4 +60,4 @@ class Accounts(Resource):
 
 class AccountsList(Resource):
     def get(self):
-        return {'shows': [x.json() for x in AccountsModel.get_all()]}
+        return {'accounts': [x.json() for x in AccountsModel.get_all()]}

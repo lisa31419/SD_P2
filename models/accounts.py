@@ -1,8 +1,11 @@
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context as pwd_context
+from flask_httpauth import HTTPBasicAuth
+from flask import g
 
 from res.db import db, secret_key
 
+auth = HTTPBasicAuth()
 
 class AccountsModel(db.Model):
     __tablename__ = 'accounts'
@@ -42,8 +45,12 @@ class AccountsModel(db.Model):
         db.session.commit()
 
     @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
     def find_by_username(cls, username):
-        return cls.query.where(username)
+        return cls.query.filter(AccountsModel.username == username).first()
 
     @classmethod
     def verify_auth_token(cls, token):
@@ -58,3 +65,13 @@ class AccountsModel(db.Model):
         user = cls.query.filter_by(username=data['username']).first()
 
         return user
+
+    @auth.verify_password
+    def verify_password(token, password):
+        return 0
+    # CODE HERE
+
+    @auth.get_user_roles
+    def get_user_roles(user):
+        return 0
+# CODE HERE

@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api
 
+from res.login import Login
 from res.account import Accounts, AccountsList
 from res.artists import Artist, ArtistList, ArtistShowsList
 from res.db import db, secret_key
@@ -46,6 +47,7 @@ api.add_resource(OrdersList, '/orders', '/orders/<string:username>/')
 api.add_resource(Accounts, '/account/<string:username>', '/account')
 api.add_resource(AccountsList, '/accounts')
 
+api.add_resource(Login, '/login')
 
 @app.route('/')
 def render_vue():
