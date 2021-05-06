@@ -49,6 +49,7 @@ class Orders(Resource):
         else:
             return {'message': "User does not exist."}
 
+
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
 
@@ -63,3 +64,8 @@ class Orders(Resource):
 class OrdersList(Resource):
     def get(self):
         return [x.json() for x in OrdersModel.get_all()]
+
+    def post(self, username, orders):
+        for new_order in orders:
+            username.orders.append(new_order)
+            Orders.post(new_order)

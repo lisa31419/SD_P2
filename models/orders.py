@@ -17,6 +17,14 @@ class OrdersModel(db.Model):
         return {'id': self.id, 'username': self.username, 'id_show': self.id_show,
                 'tickets_bought': self.tickets_bought}
 
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
     @classmethod
     def find_by_id(cls, id):
         return cls.query.get(id)

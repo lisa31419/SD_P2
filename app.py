@@ -1,13 +1,14 @@
 from flask import Flask
+from flask import render_template
+from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api
-from flask_cors import CORS
-from flask import render_template
 
+from res.account import Accounts, AccountsList
 from res.artists import Artist, ArtistList, ArtistShowsList
-from res.db import db
+from res.db import db, secret_key
 from res.order import OrdersList, Orders
-from res.places import Place, PlaceList
+from res.places import Place, PlaceList, PlaceShowsList
 from res.shows import Show, ShowList, ShowArtistsList, ShowArtist
 
 app = Flask(__name__,
@@ -17,6 +18,7 @@ app = Flask(__name__,
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = secret_key
 
 CORS(app, resources={r'/*': {'origins': '*'}})
 
@@ -36,10 +38,13 @@ api.add_resource(ShowArtist, '/show/<int:id_show>/artist/<id_artist>', '/show/<i
 
 api.add_resource(Place, '/place/<int:id>', '/place')
 api.add_resource(PlaceList, '/places')
-# api.add_resource(PlaceShowsList, '/place/<int:id>/shows')
+api.add_resource(PlaceShowsList, '/place/<int:id>/shows')
 
 api.add_resource(Orders, '/order/<string:username>')
-api.add_resource(OrdersList, '/orders')
+api.add_resource(OrdersList, '/orders', '/orders/<string:username>/')
+
+api.add_resource(Accounts, '/account/<string:username>', '/account')
+api.add_resource(AccountsList, '/accounts')
 
 
 @app.route('/')

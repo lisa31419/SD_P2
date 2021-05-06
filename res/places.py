@@ -2,6 +2,7 @@ from flask import jsonify
 from flask_restful import reqparse, Resource
 
 from models.place import PlaceModel
+from models.show import ShowModel
 from res.db import db
 
 
@@ -74,7 +75,6 @@ class PlaceList(Resource):
         return jsonify([x.json() for x in PlaceModel.get_all()])
 
 
-'''
 class PlaceShowsList(Resource):
     def get(self):
         shows = ShowModel.get_all()
@@ -89,4 +89,3 @@ class PlaceShowsList(Resource):
             return [x.json() for x in shows_in_place], 200
         else:
             return {"message": "There are no shows performed in this place."}, 404
-'''
