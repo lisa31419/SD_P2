@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 
-from models.accounts import AccountsModel
+from models.accounts import *
 from models.orders import OrdersModel
 from models.show import ShowModel
 from res.db import db
@@ -14,13 +14,14 @@ class Orders(Resource):
         else:
             return 404
 
+    @auth.login_required(role='user')
     def post(self, username):
         data = self.getData()
         id_show = data['id_show']
         tickets_bought = data['tickets_bought']
         user = AccountsModel.find_by_username(username)
 
-        if user is not None:
+        if username is g.user.username:
 
                 show = ShowModel.find_by_id(id_show)
                 shows_price = show.price
@@ -45,9 +46,9 @@ class Orders(Resource):
                         db.session.rollback()
                         return {"message": "An error occurred inserting the order."}, 500
                 else:
-                    return {"message": "You don't have enough money or there aren't tickets left."}
+                    return {"message": "You don't have enough money or there aren't tickets left."}, 400
         else:
-            return {'message': "User does not exist."}
+            return {'message': "User error in username."}, 400
 
 
     def getData(self):

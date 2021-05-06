@@ -66,12 +66,14 @@ class AccountsModel(db.Model):
 
         return user
 
-    @auth.verify_password
-    def verify_password(token, password):
-        return 0
-    # CODE HERE
+@auth.verify_password
+def verify_password(token, password):
+    g.user = AccountsModel.verify_auth_token(password)
+    return g.user
 
-    @auth.get_user_roles
-    def get_user_roles(user):
-        return 0
-# CODE HERE
+@auth.get_user_roles
+def get_user_roles(user):
+    if user.is_admin == 1:
+        return ['admin']
+    return ['user']
+
