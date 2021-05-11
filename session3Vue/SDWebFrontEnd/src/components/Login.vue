@@ -73,6 +73,7 @@ export default {
     }
   },
   methods: {
+    /* LOGIN AND ACCOUNTS */
     checkLogin () {
       const parameters = {
         username: this.username,
@@ -100,7 +101,7 @@ export default {
         .then((res) => {
           this.is_admin = res.data.is_admin
           this.successAlert()
-          this.$router.replace({ path: '/', query: { username: this.username, logged: this.logged, is_admmin: this.is_admin, token: this.token } })
+          this.$router.replace({ path: '/', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token } })
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -110,6 +111,36 @@ export default {
           alert('User')
         })
     },
+    /* CLEANING INFO */
+    initForm () {
+      this.addUserForm.username = ''
+      this.addUserForm.password = ''
+    },
+    onReset (event) {
+      event.preventDefault()
+      // Reset our form values
+      this.initForm()
+    },
+    /* PUSHING INFO */
+    onSubmit () {
+      const path = `http://localhost:5000/account`
+      const parameters = {
+        username: this.addUserForm.username,
+        password: this.addUserForm.password
+      }
+      axios.post(path, parameters)
+        .then(() => {
+          this.accountCreatedAlert()
+          this.initForm()
+          console.log('Account done')
+        })
+        .catch((error) => {
+          this.duplicatedAccountAlert()
+          this.initForm()
+          console.log(error)
+        })
+    },
+    /* ALERTS */
     successAlert () {
       this.$alert('You are logged in!', 'Success', 'success').then(() => console.log('Closed'))
     },
@@ -123,37 +154,7 @@ export default {
     duplicatedAccountAlert () {
       this.$alert('This account already exists.', 'Warning', 'warning').then(() => console.log('Closed'))
     },
-    initForm () {
-      this.addUserForm.username = ''
-      this.addUserForm.password = ''
-    },
-    onSubmit (event) {
-      event.preventDefault()
-      alert(JSON.stringify(this.form))
-      const path = `http://localhost:5000/account`
-      const parameters = {
-        username: this.addUserForm.username,
-        password: this.addUserForm.password
-      }
-      axios.post(path, parameters)
-        .then(() => {
-          console.log('Account done')
-          this.accountCreatedAlert()
-          this.initForm()
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.log(error)
-          this.duplicatedAccountAlert()
-          this.initForm()
-        })
-    },
-    onReset (event) {
-      event.preventDefault()
-      // Reset our form values
-      this.addUserForm.username = ''
-      this.addUserForm.password = ''
-    },
+    /*  CHANGE HTML AND ROUTES */
     createAccount () {
       this.login = false
     },

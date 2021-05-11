@@ -62,7 +62,10 @@
     </div>
     <!-- Show the shows when button is deactivated-->
     <div v-else class...>
-      <button class='btn btn-success pull-left' @click="goToCart()"> Cart</button>
+      <button class='btn btn-success buttonWidth pull-left' @click="goToCart()"><b>View Cart</b></button>
+      <button class='btn buttonWidth button2 text-white pull-left' @click="goToLogIn()"><b>Log In</b></button>
+      <h4 class="text-right" >Total tickets in Cart: {{this.shows_added.length}}</h4>
+      <h4 class="text-right">Available money: {{this.money_available}}</h4>
       <!--h1> {{ message }} </h1>
       <button class="btn btn-success btn-lg" @click="buyTickets"> Buy ticket </button>
       <button class="btn btn-success btn-lg" @click="returnTickets"> Return Ticket </button>
@@ -179,6 +182,10 @@ export default {
     goToShows () {
       this.isShowingCart = false
     },
+    goToLogIn () {
+      this.logged = false
+      this.$router.replace({ path: '/userlogin', query: { logged: this.logged, user: this.user } })
+    },
     buyTickets (tickets) {
       if (this.money_available >= tickets['show'].price) {
         tickets['quantity'] += 1
@@ -203,17 +210,18 @@ export default {
       this.shows_added.splice(indice, 1)
     },
     addPurchase (parameters) {
-      const path = 'http://localhost:5000/order/test'
-      axios.post(path, parameters)
+      const path = `http://localhost:5000/order/${this.username}`
+      axios.post(path, parameters, {
+        auth: {username: this.token}
+      })
         .then(() => {
           console.log('Order done')
           this.shows_added = []
           this.just_shows = []
         })
         .catch((error) => {
-          // eslint-disable-next-line
           console.log(error)
-          this.getShows()
+          this.goToCart()
         })
     },
     finalizePurchase () {
@@ -238,6 +246,14 @@ export default {
   },
   created () {
     this.getShows()
+    this.username = this.$route.query.username
+    this.logged = this.$route.query.logged
+    this.is_admin = this.$route.query.is_admin
+    this.token = this.$route.query.token
   }
 }
 </script>
+<style>
+.buttonWidth {width: 100%;}
+.button2 {background-color: #008CBA;} /* Blue */
+</style>
