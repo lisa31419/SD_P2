@@ -5,8 +5,8 @@ import App from './App.vue'
 // import router from './router'
 import VueRouter from 'vue-router'
 
-import Cart from './components/Cart'
 import Shows from './components/Shows'
+import Login from './components/Login.vue'
 
 Vue.use(VueRouter)
 Vue.config.productionTip = false
@@ -15,8 +15,8 @@ const router = new VueRouter({
   mode: 'history',
   base: __dirname,
   routes: [
-    { path: '/', name: 'ShowsPage', component: Shows },
-    { path: '/cart/', name: 'CartPage', component: Cart }
+    { path: '/', name: 'Shows', component: Shows },
+    { path: '/userlogin/', name: 'Login', component: Login }
   ]
 })
 
