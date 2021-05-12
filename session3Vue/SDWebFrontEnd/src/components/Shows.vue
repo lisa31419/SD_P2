@@ -63,7 +63,9 @@
     <!-- Show the shows when button is deactivated-->
     <div v-else class...>
       <button class='btn btn-success buttonWidth pull-left' @click="goToCart()"><b>View Cart</b></button>
-      <button class='btn buttonWidth button2 text-white pull-left' @click="goToLogIn()"><b>Log In</b></button>
+      <br>
+      <button v-if="this.logged" class='btn buttonWidth btn-danger text-white pull-left' @click="logOut()"><b>Log Out</b></button>
+      <button v-else-if="!this.logged" class='btn buttonWidth button2 text-white pull-left' @click="goToLogIn()"><b>Log In</b></button>
       <h4 class="text-right" >Total tickets in Cart: {{this.shows_added.length}}</h4>
       <h4 class="text-right">Available money: {{this.money_available}}</h4>
       <!--h1> {{ message }} </h1>
@@ -185,6 +187,11 @@ export default {
     goToLogIn () {
       this.logged = false
       this.$router.replace({ path: '/userlogin', query: { logged: this.logged, user: this.user } })
+    },
+    logOut () {
+      this.logged = false
+      this.$router.push({ path: '/' })
+      window.location.reload()
     },
     buyTickets (tickets) {
       if (this.money_available >= tickets['show'].price) {
