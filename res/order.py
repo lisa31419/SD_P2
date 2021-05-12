@@ -16,13 +16,12 @@ class Orders(Resource):
 
     @auth.login_required(role='user')
     def post(self, username):
+        print("Haciendo el post")
         data = self.getData()
         id_show = data['id_show']
         tickets_bought = data['tickets_bought']
         user = AccountsModel.find_by_username(username)
-
-        if username is g.user.username:
-
+        if user.username is g.user.username:
                 show = ShowModel.find_by_id(id_show)
                 shows_price = show.price
                 available_tickets = show.total_available_tickets

@@ -1,6 +1,6 @@
 from flask_restful import reqparse, Resource
 
-from models.accounts import AccountsModel
+from models.accounts import *
 from res.order import Orders
 
 
@@ -31,6 +31,7 @@ class Accounts(Resource):
         else:
             return {'message': "Show with id [{}] already exists".format(id)}
 
+    @auth.login_required(role='admin')
     def delete(self, username):
         if username is None or self.get(username) == 404:
             return {'message': "Username must be in the list"}, 404

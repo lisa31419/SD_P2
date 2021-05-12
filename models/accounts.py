@@ -7,6 +7,7 @@ from res.db import db, secret_key
 
 auth = HTTPBasicAuth()
 
+
 class AccountsModel(db.Model):
     __tablename__ = 'accounts'
 
@@ -66,14 +67,18 @@ class AccountsModel(db.Model):
 
         return user
 
+
 @auth.verify_password
 def verify_password(token, password):
-    g.user = AccountsModel.verify_auth_token(password)
+    print("Autentificando el password")
+    g.user = AccountsModel.verify_auth_token(token)
+    print("autentificado")
+    print(g.user)
     return g.user
+
 
 @auth.get_user_roles
 def get_user_roles(user):
     if user.is_admin == 1:
         return ['admin']
     return ['user']
-
