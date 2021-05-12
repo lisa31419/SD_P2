@@ -6,6 +6,7 @@ from res.order import Orders
 
 class Accounts(Resource):
     def get(self, username):
+        print(username)
         account = AccountsModel.find_by_username(username)
         if account is not None:
             return {'account': account.json()}, 200
@@ -20,16 +21,14 @@ class Accounts(Resource):
         if self.get(username) == 404:
             try:
                 new_user = AccountsModel(username)
-                print("wfwggw")
                 new_user.hash_password(password)
-                print("wfwggw")
                 new_user.save_to_db()
                 return new_user.json()
             except:
                 return {"message": "An error occurred inserting the user."}, 500
 
         else:
-            return {'message': "Show with id [{}] already exists".format(id)}
+            return {'message': "Error username introduced exists"}
 
     @auth.login_required(role='admin')
     def delete(self, username):

@@ -48,8 +48,8 @@
                      placeholder="Enter password" required v-model="addUserForm.password">
             </div>
             <br>
-            <button class="btn button2 btn-lg text-white"  type="submit" @click="onSubmit()">Submit</button>
-            <button class="btn btn-danger btn-lg text-white " type="reset" @click="onReset()">Reset</button>
+            <button class="btn button2 btn-lg text-white"  type="submit" @click="onSubmit">Submit</button>
+            <button class="btn btn-danger btn-lg text-white " type="reset" @click="onReset">Reset</button>
         </div>
       </div>
     </div>
@@ -96,7 +96,7 @@ export default {
     },
     getAccount () {
       const path = `http://localhost:5000/account/${this.username}`
-      axios.get(path, this.username)
+      axios.get(path)
         .then((res) => {
           this.is_admin = res.data.is_admin
           this.successAlert()
