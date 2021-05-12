@@ -131,6 +131,7 @@ export default {
           this.accountCreatedAlert()
           this.initForm()
           console.log('Account done')
+          this.goBackToLogin()
         })
         .catch((error) => {
           this.duplicatedAccountAlert()
