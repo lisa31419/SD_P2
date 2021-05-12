@@ -214,7 +214,7 @@ export default {
       this.shows_added.splice(indice, 1)
     },
     addPurchase (parameters) {
-      const path = `http://localhost:5000/order/${this.username}`
+      const path = `http://localhost:5000/orders/${this.username}`
       axios.post(path, parameters, {
         auth: {username: this.token}
       })
@@ -238,7 +238,8 @@ export default {
         listTemp.push(parameters)
         // this.shows_added[i].tickets_available -= this.shows_added[i].quantity
       }
-      this.addPurchase(listTemp)
+      console.log(listTemp)
+      this.addPurchase({orders: listTemp})
     },
     getShows () {
       const path = 'http://localhost:5000/shows'

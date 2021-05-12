@@ -6,7 +6,6 @@ from res.order import Orders
 
 class Accounts(Resource):
     def get(self, username):
-        print(username)
         account = AccountsModel.find_by_username(username)
         if account is not None:
             return {'account': account.json()}, 200
