@@ -48,8 +48,8 @@
                      placeholder="Enter password" required v-model="addUserForm.password">
             </div>
             <br>
-            <button class="btn button2 btn-lg text-white"  type="submit" @click="onSubmit">Submit</button>
-            <button class="btn btn-danger btn-lg text-white " type="reset" @click="onReset">Reset</button>
+            <button class="btn button2 btn-lg text-white"  type="submit" @click="onSubmit()">Submit</button>
+            <button class="btn btn-danger btn-lg text-white " type="reset" @click="onReset()">Reset</button>
         </div>
       </div>
     </div>

@@ -16,8 +16,8 @@
                 <tr>
                   <th scope="col">Event Name</th>
                   <th scope="col">Quantity</th>
-                  <th scope="col">Total Price</th>
                   <th scope="col">Total Tickets</th>
+                  <th scope="col">Total Price</th>
                   <th scope="col"></th>
                   <th></th>
                 </tr>
@@ -206,6 +206,10 @@ export default {
     },
     deleteEventFromCart (show) {
       let indice = this.just_shows.indexOf(show)
+      // let showTemp = this.shows_added[indice]
+      if (show['queantity'] > 0) {
+        this.money_available += show['show'].price
+      }
       this.just_shows.splice(indice, 1)
       this.shows_added.splice(indice, 1)
     },
@@ -225,13 +229,16 @@ export default {
         })
     },
     finalizePurchase () {
+      let listTemp = []
       for (let i = 0; i < this.shows_added.length; i += 1) {
         const parameters = {
           id_show: this.shows_added[i].show.id,
           tickets_bought: this.shows_added[i].quantity
         }
-        this.addPurchase(parameters)
+        listTemp.push(parameters)
+        // this.shows_added[i].tickets_available -= this.shows_added[i].quantity
       }
+      this.addPurchase(listTemp)
     },
     getShows () {
       const path = 'http://localhost:5000/shows'
