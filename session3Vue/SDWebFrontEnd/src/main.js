@@ -1,15 +1,15 @@
-// import BootstrapVue from 'bootstrap-vue'
 import '@/../bootstrap/css/bootstrap.css'
 import Vue from 'vue'
 import App from './App.vue'
-// import router from './router'
 import VueRouter from 'vue-router'
-
+import VueSweetalert2 from 'vue-sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
 import Shows from './components/Shows'
 import Login from './components/Login.vue'
 
-Vue.use(VueRouter)
 Vue.config.productionTip = false
+Vue.use(VueSweetalert2)
+Vue.use(VueRouter)
 
 const router = new VueRouter({
   mode: 'history',

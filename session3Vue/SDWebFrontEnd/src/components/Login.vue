@@ -1,34 +1,34 @@
 <template>
   <div v-if="login" class...>
-  <div class="d-flex justify-content-center">
-    <div class="card justify-content-md-center" style="width: 32rem">
-    <h2 class="card-header text-center"><b>Sign In</b></h2>
-    <hr>
-    <div class="card-body" style="text-align: justify;">
-  <div class="form-label-group">
-    <label for="inputUsername">Username</label>
-    <input type="username" id="inputUsername" class="form-control"
-           placeholder="Username" required autofocus v-model="username">
-  </div>
-  <div class="form-label-group">
-    <br>
-    <label for="inputPassword">Password</label>
-    <input type="password" id="inputPassword" class="form-control"
-           placeholder="Password" required v-model="password">
-  </div>
-    <br>
-      <div class="flex-parent jc-center" style="margin: 10px">
-    <button class="btn button2 btn-lg text-white buttonWidth"  @click="checkLogin()">SIGN IN</button>
-      </div>
+    <div class="d-flex justify-content-center">
+      <div class="card justify-content-md-center" style="width: 32rem">
+      <h2 class="card-header text-center"><b>Sign In</b></h2>
+      <hr>
+      <div class="card-body" style="text-align: justify;">
+    <div class="form-label-group">
+      <label for="inputUsername">Username</label>
+      <input type="username" id="inputUsername" class="form-control"
+             placeholder="Username" required autofocus v-model="username">
+    </div>
+    <div class="form-label-group">
+      <br>
+      <label for="inputPassword">Password</label>
+      <input type="password" id="inputPassword" class="form-control"
+             placeholder="Password" required v-model="password">
+    </div>
+      <br>
         <div class="flex-parent jc-center" style="margin: 10px">
-    <button class="btn button3 btn-lg text-white buttonWidth" @click="createAccount()">CREATE ACCOUNT</button>
+          <button id= "singIn" class="btn button2 btn-lg text-white buttonWidth"  @click="checkLogin()">SIGN IN</button>
+            </div>
+              <div class="flex-parent jc-center" style="margin: 10px">
+          <button id= "createAccount" class="btn button3 btn-lg text-white buttonWidth" @click="createAccount()">CREATE ACCOUNT</button>
+              </div>
+              <div class="flex-parent jc-center" style="margin: 10px">
+          <button id= "backEvents" class="btn button1 btn-lg text-white buttonWidth" @click="goBackToEvents()">BACK TO EVENTS</button>
+            </div>
         </div>
-        <div class="flex-parent jc-center" style="margin: 10px">
-    <button class="btn button1 btn-lg text-white buttonWidth" @click="goBackToEvents()">BACK TO EVENTS</button>
-      </div>
-  </div>
-  </div>
-  </div>
+       </div>
+    </div>
   </div>
   <div v-else class...>
     <div class="d-flex justify-content-center">
@@ -89,10 +89,9 @@ export default {
           this.accountCreatedAlert()
         })
         .catch((error) => {
-          // eslint-disable-next-line
+          this.errorAlert()
           console.error(error)
           this.user = ''
-          alert('Username or Password incorrect')
         })
     },
     getAccount () {
@@ -104,9 +103,8 @@ export default {
           this.$router.replace({ path: '/', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token } })
         })
         .catch((error) => {
-          // eslint-disable-next-line
-          console.error(error)
           this.errorAlert()
+          console.error(error)
           this.user = ''
           alert('User')
         })
@@ -142,17 +140,20 @@ export default {
     },
     /* ALERTS */
     successAlert () {
-      this.$alert('You are logged in!', 'Success', 'success').then(() => console.log('Closed'))
+      // Use sweetalert2
+      this.$swal('Success', 'You are logged in!', 'success')
     },
     errorAlert () {
-      this.$confirm('Username or Password incorrect', 'Error', 'error')
-      console.log('Error')
+      // Use sweetalert2
+      this.$swal('Error', 'Username or password incorrect.\n Please Change them.', 'error')
     },
     accountCreatedAlert () {
-      this.$alert('Account created successfully.', 'Success', 'success').then(() => console.log('Closed'))
+      // Use sweetalert2
+      this.$swal('Success', 'Account created successfully.', 'success')
     },
     duplicatedAccountAlert () {
-      this.$alert('This account already exists.', 'Warning', 'warning').then(() => console.log('Closed'))
+      // Use sweetalert2
+      this.$swal('Warning', 'This account already exists.', 'warning')
     },
     /*  CHANGE HTML AND ROUTES */
     createAccount () {
