@@ -66,7 +66,7 @@
       <br>
       <button v-if="this.logged" class='btn buttonWidth btn-danger text-white pull-left' @click="logOut()"><b>Log Out</b></button>
       <button v-else-if="!this.logged" class='btn buttonWidth button2 text-white pull-left' @click="goToLogIn()"><b>Log In</b></button>
-      <h4 class="text-right" >Total tickets in Cart: {{this.shows_added.length}}</h4>
+      <h4 class="text-right">Total tickets in Cart: {{this.shows_added.length}}</h4>
       <h4 class="text-right">Available money: {{this.money_available}}</h4>
       <!--h1> {{ message }} </h1>
       <button class="btn btn-success btn-lg" @click="buyTickets"> Buy ticket </button>
@@ -117,7 +117,7 @@ export default {
       message: 'My first component',
       tickets_bought: 0,
       price_event: 10,
-      money_available: 200,
+      money_available: 0,
       shows: [
         {
           name: 'Festival Cruilla 2020',
@@ -193,6 +193,18 @@ export default {
       this.$router.push({ path: '/' })
       window.location.reload()
     },
+    getMoneyFromUser () {
+      const path = `http://localhost:5000/account/${this.username}`
+      axios.get(path)
+        .then((res) => {
+          this.money_available = res.data.money_available
+          console.log(this.money_available)
+        })
+        .catch((error) => {
+          console.log(error)
+          this.money_available = 0
+        })
+    },
     buyTickets (tickets) {
       if (this.money_available >= tickets['show'].price) {
         tickets['quantity'] += 1
@@ -259,15 +271,20 @@ export default {
     }
   },
   created () {
-    this.getShows()
     this.username = this.$route.query.username
     this.logged = this.$route.query.logged
     this.is_admin = this.$route.query.is_admin
     this.token = this.$route.query.token
+    this.getShows()
+    this.getMoneyFromUser()
   }
 }
 </script>
 <style>
 .buttonWidth {width: 100%;}
 .button2 {background-color: #008CBA;} /* Blue */
+.button2:hover {
+  background-color: #0780A8;
+  color: white;
+}
 </style>
