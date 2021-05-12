@@ -1,4 +1,11 @@
-from res.db import db
+from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+from passlib.apps import custom_app_context as pwd_context
+from flask_httpauth import HTTPBasicAuth
+from flask import g
+
+from res.db import db, secret_key
+
+auth = HTTPBasicAuth()
 
 
 class AccountsModel(db.Model):
@@ -14,7 +21,16 @@ class AccountsModel(db.Model):
         self.username = username
         self.available_money = available_money
         self.is_admin = is_admin
-        self.password = 'test'
+
+    def hash_password(self, password):
+        self.password = pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password)
+
+    def generate_auth_token(self, expiration=600):
+        s = Serializer(secret_key, expires_in=expiration)
+        return s.dumps({'username': self.username})
 
     def json(self):
         return {'username': self.username,
@@ -30,5 +46,39 @@ class AccountsModel(db.Model):
         db.session.commit()
 
     @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
     def find_by_username(cls, username):
-        return cls.query.get(username)
+        return cls.query.filter(AccountsModel.username == username).first()
+
+    @classmethod
+    def verify_auth_token(cls, token):
+        s = Serializer(secret_key)
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None  # valid token, but expired
+        except BadSignature:
+            return None  # invalid token
+
+        user = cls.query.filter_by(username=data['username']).first()
+
+        return user
+
+
+@auth.verify_password
+def verify_password(token, password):
+    print("Autentificando el password")
+    g.user = AccountsModel.verify_auth_token(token)
+    print("autentificado")
+    print(g.user)
+    return g.user
+
+
+@auth.get_user_roles
+def get_user_roles(user):
+    if user.is_admin == 1:
+        return ['admin']
+    return ['user']

@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 
-from models.accounts import AccountsModel
+from models.accounts import *
 from models.orders import OrdersModel
 from models.show import ShowModel
 from res.db import db
@@ -14,14 +14,14 @@ class Orders(Resource):
         else:
             return 404
 
+    @auth.login_required(role='user')
     def post(self, username):
+        print("Haciendo el post")
         data = self.getData()
         id_show = data['id_show']
         tickets_bought = data['tickets_bought']
         user = AccountsModel.find_by_username(username)
-
-        if user is not None:
-
+        if user.username is g.user.username:
                 show = ShowModel.find_by_id(id_show)
                 shows_price = show.price
                 available_tickets = show.total_available_tickets
@@ -45,9 +45,10 @@ class Orders(Resource):
                         db.session.rollback()
                         return {"message": "An error occurred inserting the order."}, 500
                 else:
-                    return {"message": "You don't have enough money or there aren't tickets left."}
+                    return {"message": "You don't have enough money or there aren't tickets left."}, 400
         else:
-            return {'message': "User does not exist."}
+            return {'message': "User error in username."}, 400
+
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
@@ -64,16 +65,29 @@ class OrdersList(Resource):
     def get(self):
         return [x.json() for x in OrdersModel.get_all()]
 
-    def post(self, username, param):
+    def getData(self):
+        parser = reqparse.RequestParser()  # create parameters parser from request
 
+        # define all input parameters need and its type
+        parser.add_argument('orders', action='append', type=dict)
+
+        data = parser.parse_args()
+        return data
+
+    @auth.login_required(role='user')
+    def post(self, username):
+        data = self.getData()
+        print(data)
+        orders = data['orders']
         user = AccountsModel.find_by_username(username)
-
-        if user is not None:
-
-            for order in param:
-                data = self.getData()
-                id_show = data['id_show']
-                tickets_bought = data['tickets_bought']
+        if user.username is g.user.username:
+            print("username passed")
+            for order in orders:
+                id_show = order['id_show']
+                tickets_bought = order['tickets_bought']
+                print(tickets_bought, id_show)
+                if tickets_bought == 0:
+                    continue
 
                 show = ShowModel.find_by_id(id_show)
                 shows_price = show.price
@@ -86,20 +100,18 @@ class OrdersList(Resource):
                         users_money -= (shows_price * tickets_bought)
                         user.available_money = users_money
                         new_order = OrdersModel(id_show, tickets_bought)
-                        print("he pasado el new_order")
                         user.orders.append(new_order)
-                        print("he pasado el user append")
-                        # es posible que falte un db.session.add(self) cambiando self por algo
                         db.session.add(new_order)
-                        db.session.commit()
-                        print("he pasado el commit")
-                        return {'order': new_order.json()}
                     except:
                         db.session.rollback()
                         return {"message": "An error occurred inserting the order."}, 500
                 else:
-                    return {"message": "You don't have enough money or there aren't tickets left."}
+                    return {"message": "You don't have enough money or there aren't tickets left."}, 400
+            try:
+                db.session.commit()
+                return {'order': orders.json()}
+            except:
+                db.session.rollback()
+                return {"message": "An error occurred committing the order."}, 500
         else:
-            return {'message': "User does not exist."}
-
-
+            return {'message': "User error in username."}, 400
