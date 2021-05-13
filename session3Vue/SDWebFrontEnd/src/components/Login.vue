@@ -98,7 +98,7 @@ export default {
       const path = `http://localhost:5000/account/${this.username}`
       axios.get(path)
         .then((res) => {
-          this.is_admin = res.data.is_admin
+          this.is_admin = res.data.account['is admin?']
           this.successAlert()
           this.$router.replace({ path: '/', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token } })
         })

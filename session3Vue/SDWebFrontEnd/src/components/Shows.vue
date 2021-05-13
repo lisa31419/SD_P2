@@ -197,8 +197,11 @@ export default {
       const path = `http://localhost:5000/account/${this.username}`
       axios.get(path)
         .then((res) => {
-          this.money_available = res.data.money_available
-          console.log(this.money_available)
+          if (res.data.toString() === '404') {
+            this.money_available = 0
+          } else {
+            this.money_available = res.data.account['available money']
+          }
         })
         .catch((error) => {
           console.log(error)
