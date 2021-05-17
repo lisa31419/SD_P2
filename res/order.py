@@ -16,7 +16,6 @@ class Orders(Resource):
 
     @auth.login_required(role='user')
     def post(self, username):
-        print("Haciendo el post")
         data = self.getData()
         id_show = data['id_show']
         tickets_bought = data['tickets_bought']
@@ -33,13 +32,10 @@ class Orders(Resource):
                         users_money -= (shows_price * tickets_bought)
                         user.available_money = users_money
                         new_order = OrdersModel(id_show, tickets_bought)
-                        print("he pasado el new_order")
                         user.orders.append(new_order)
-                        print("he pasado el user append")
                         # es posible que falte un db.session.add(self) cambiando self por algo
                         db.session.add(new_order)
                         db.session.commit()
-                        print("he pasado el commit")
                         return {'order': new_order.json()}
                     except:
                         db.session.rollback()
@@ -77,15 +73,12 @@ class OrdersList(Resource):
     @auth.login_required(role='user')
     def post(self, username):
         data = self.getData()
-        print(data)
         orders = data['orders']
         user = AccountsModel.find_by_username(username)
         if user.username is g.user.username:
-            print("username passed")
             for order in orders:
                 id_show = order['id_show']
                 tickets_bought = order['tickets_bought']
-                print(tickets_bought, id_show)
                 if tickets_bought == 0:
                     continue
 
@@ -93,13 +86,13 @@ class OrdersList(Resource):
                 shows_price = show.price
                 available_tickets = show.total_available_tickets
                 users_money = user.available_money
-
                 if shows_price < users_money and available_tickets > 0:
                     try:
                         show.total_available_tickets = available_tickets - 1
                         users_money -= (shows_price * tickets_bought)
                         user.available_money = users_money
                         new_order = OrdersModel(id_show, tickets_bought)
+
                         user.orders.append(new_order)
                         db.session.add(new_order)
                     except:
@@ -109,7 +102,8 @@ class OrdersList(Resource):
                     return {"message": "You don't have enough money or there aren't tickets left."}, 400
             try:
                 db.session.commit()
-                return {'order': orders.json()}
+                return {'order': orders}, 200
+
             except:
                 db.session.rollback()
                 return {"message": "An error occurred committing the order."}, 500

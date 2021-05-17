@@ -3,6 +3,7 @@ from flask_restful import reqparse, Resource
 
 from models.artist import ArtistModel
 from models.show import ShowModel
+from models.accounts import *
 from res.db import db
 
 
@@ -14,6 +15,7 @@ class Show(Resource):
         else:
             return 404
 
+    @auth.login_required(role='admin')
     def post(self, id=None):
         data = self.getData()
 
@@ -24,13 +26,14 @@ class Show(Resource):
             new_show = ShowModel(data['name'], data['date'], data['price'], data['total_available_tickets'])
             try:
                 new_show.save_to_db()
-                return {'message': "Show with id [{}] added correctly".format(id)}
+                return {'message': "Show with id [{}] added correctly".format(id)}, id, 200
             except:
                 return {"message": "An error occurred inserting the show."}, 500
 
         else:
             return {'message': "Show with id [{}] already exists".format(id)}
 
+    @auth.login_required(role='admin')
     def delete(self, id):
         if id is None or self.get(id) == 404:
             return {'message': "Id must be in the list"}, 404
@@ -42,18 +45,24 @@ class Show(Resource):
         except:
             return {'message': "Error while deleting the show"}, 500
 
+    @auth.login_required(role='admin')
     def put(self, id):
+        print("he entrado en el put")
         data = self.getData()
+        print("he pasado el data")
 
         if self.get(id) == 404:
             self.post(id)
             return {'message': "Show with id [{}] will be created".format(id)}
         else:
+            print("estoy en el else")
             show_to_update = ShowModel.find_by_id(id)
             show_to_update.name = data['name']
+            print(data['date'])
             show_to_update.date = dateutil.parser.parse(data['date'])
             show_to_update.price = data['price']
-            show_to_update.total_available_tickets = data['total_available_tickets ']
+            print(data['total_available_tickets'])
+            show_to_update.total_available_tickets = data['total_available_tickets']
             db.session.commit()
             return {'message': "Show with id [{}] updated".format(id)}
 
@@ -84,7 +93,7 @@ class ShowArtistsList(Resource):
     def get(self, id):
         artists_in_show = ShowModel.find_by_id(id).artists
         if artists_in_show:
-            return [x.json() for x in artists_in_show], 200
+            return {'artists': [x.json() for x in artists_in_show]}
         else:
             return {"message": "There are no artists in this show."}, 404
 
@@ -98,6 +107,7 @@ class ShowArtist(Resource):
         else:
             return {"message": "There are no artists with id [{}] in this show.".format(id_artist)}, 404
 
+    @auth.login_required(role='admin')
     def post(self, id_show, id_artist=None):
         # data = Artist.getData(self)
         show_found = ShowModel.find_by_id(id_show)

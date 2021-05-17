@@ -3,12 +3,8 @@ from flask_restful import reqparse, Resource
 
 from models.artist import ArtistModel
 from models.show import ShowModel
+from models.accounts import *
 from res.db import db
-
-
-class ArtistList(Resource):
-    def get(self):
-        return jsonify([x.json() for x in ArtistModel.get_all()])
 
 
 class Artist(Resource):
@@ -20,6 +16,7 @@ class Artist(Resource):
         else:
             return 404
 
+    @auth.login_required(role='admin')
     def post(self, id=None):
         data = self.getData()
 
@@ -30,13 +27,14 @@ class Artist(Resource):
             new_artist = ArtistModel(data['name'], data['country'], data['disciplines'])
             try:
                 new_artist.save_to_db()
-                return {'message': "Artist with id [{}] added correctly".format(id)}
+                return id, 200
             except:
                 return {"message": "An error occurred inserting the artist."}, 500
 
         else:
-            return {'message': "Artist with id [{}] already exists".format(id)}
+            return id, 409
 
+    @auth.login_required(role='admin')
     def delete(self, id):
         if id is None or self.get(id) == 404:
             return {'message': "Id must be in the list"}, 404
@@ -73,6 +71,11 @@ class Artist(Resource):
 
         data = parser.parse_args()
         return data
+
+
+class ArtistList(Resource):
+    def get(self):
+        return jsonify([x.json() for x in ArtistModel.get_all()])
 
 
 class ArtistShowsList(Resource):
