@@ -1,40 +1,41 @@
 <template>
+  <body>
   <div v-if="login" class...>
-    <div class="d-flex justify-content-center">
+    <h1 id="transparencyLogIn">  . </h1>
+    <div class="d-flex justify-content-center" >
       <div class="card justify-content-md-center" style="width: 32rem">
-      <h2 class="card-header text-center"><b>Sign In</b></h2>
-      <hr>
-      <div class="card-body" style="text-align: justify;">
-    <div class="form-label-group">
-      <label for="inputUsername">Username</label>
-      <input type="username" id="inputUsername" class="form-control"
-             placeholder="Username" required autofocus v-model="username">
-    </div>
-    <div class="form-label-group">
-      <br>
-      <label for="inputPassword">Password</label>
-      <input type="password" id="inputPassword" class="form-control"
-             placeholder="Password" required v-model="password">
-    </div>
-      <br>
-        <div class="flex-parent jc-center" style="margin: 10px">
-          <button id= "singIn" class="btn button2 btn-lg text-white buttonWidth"  @click="checkLogin()">SIGN IN</button>
+        <h2 class="card-header text-center"><b>Log In</b></h2>
+          <div class="card-body" style="text-align: justify;">
+            <div class="form-label-group">
+              <label for="inputUsername">Username</label>
+              <input type="username" id="inputUsername" class="form-control"
+                     placeholder="Username" required autofocus v-model="username">
             </div>
-              <div class="flex-parent jc-center" style="margin: 10px">
-          <button id= "createAccount" class="btn button3 btn-lg text-white buttonWidth" @click="createAccount()">CREATE ACCOUNT</button>
-              </div>
-              <div class="flex-parent jc-center" style="margin: 10px">
-          <button id= "backEvents" class="btn button1 btn-lg text-white buttonWidth" @click="goBackToEvents()">BACK TO EVENTS</button>
+            <div class="form-label-group">
+              <br>
+              <label for="inputPassword">Password</label>
+              <input type="password" id="inputPassword" class="form-control"
+                     placeholder="Password" required v-model="password">
             </div>
-        </div>
+            <br>
+            <div class="flex-parent jc-center" style="margin: 10px">
+              <button id= "gradLogIn" class="btn btn-lg text-white buttonWidth"  @click="checkLogin()"><b>SIGN IN</b></button>
+            </div>
+            <div class="flex-parent jc-center" style="margin: 10px">
+              <button id= "gradCreateAccount" class="btn btn-lg text-white buttonWidth" @click="createAccount()"><b>CREATE ACCOUNT</b></button>
+            </div>
+            <div class="flex-parent jc-center" style="margin: 10px">
+              <button id= "gradBack" class="btn btn-lg text-white buttonBack" @click="goBackToEvents()">BACK TO EVENTS</button>
+            </div>
+          </div>
        </div>
     </div>
   </div>
   <div v-else class...>
+    <h1 id="transparencySignUp">  . </h1>
     <div class="d-flex justify-content-center">
       <div class="card justify-content-md-center" style="width: 32rem">
         <h2 class="card-header text-center"><b>Create Account</b><span class="close" @click="goBackToLogin()">x</span></h2>
-        <hr>
         <div class="card-body" style="text-align: justify;">
             <div class="form-label-group">
               <label for="inputUsername">Username</label>
@@ -48,12 +49,16 @@
                      placeholder="Enter password" required v-model="addUserForm.password">
             </div>
             <br>
-            <button class="btn button2 btn-lg text-white"  type="submit" @click="onSubmit">Submit</button>
-            <button class="btn btn-danger btn-lg text-white " type="reset" @click="onReset">Reset</button>
+            <div class="d-flex justify-content-center" >
+              <button id="gradSubmit" class="btn buttonSubmit btn-lg text-white" type="submit" @click="onSubmit">Submit</button>
+              <hr>
+              <button id="gradReset" class="btn buttonReset btn-lg text-white" type="reset" @click="onReset">Reset</button>
+            </div>
         </div>
       </div>
     </div>
   </div>
+  </body>
 </template>
 
 <script>
@@ -164,23 +169,91 @@ export default {
       this.login = true
     },
     goBackToEvents () {
-      this.logged = false
-      this.$router.replace({ path: '/', query: { logged: this.logged } })
+      this.$router.replace({ path: '/' })
     }
   }
 }
 </script>
 
 <style scoped>
+body  {
+  background-image: url("https://quientocaque.com/files/45308956/27/IMAGE1/concierto.jpg");
+  background-color: black;
+  height: 600px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
 .buttonWidth {width: 100%;}
-.button1 {background-color: #808080;} /* Grey */
-.button2 {background-color: #008CBA;} /* Blue */
-.button3 {background-color: #0EBF38;} /* Green */
+.buttonBack {
+  width: 100%;
+  height: 50px;
+}
+.buttonSubmit {
+  width: 45%;
+}
+.buttonReset {
+  width: 45%;
+}
 .flex-parent {
   display: flex;
 }
-
 .jc-center {
   justify-content: center;
 }
+#transparencyLogIn {
+  opacity: 0;
+}
+#transparencySignUp {
+  opacity: 0;
+}
+
+/* Cyan */
+#gradLogIn {
+  background-color: #4092FE; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#4092FE, #3178D6);
+}
+#gradLogIn:hover {
+  background-color: #3178D6; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#3178D6, #205FB2);
+}
+#gradSubmit {
+  background-color: #008CBA; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#4092FE, #3178D6);
+}
+#gradSubmit:hover {
+  background-color: #3178D6; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#3178D6, #205FB2);
+}
+/* Reddish pick  */
+#gradCreateAccount {
+  background-color: #FF1E88; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#FF1E88, #E40E73);
+}
+#gradCreateAccount:hover {
+  background-color: #E40E73; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#E40E73, #BA0B5D);
+}
+
+/* Orange */
+#gradBack {
+  background-color: #9B9A9A; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#9B9A9A, #888888);
+}
+#gradBack:hover {
+  background-color: #888888; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#888888, #676767);
+}
+
+/* Orange */
+#gradReset {
+  background-color: #FF3B41; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#FF3B41, #D7242A);
+}
+#gradReset:hover {
+  background-color: #D7242A; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#D7242A, #A2151A);
+}
+
 </style>

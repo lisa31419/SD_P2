@@ -6,6 +6,7 @@ import VueSweetalert2 from 'vue-sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import Shows from './components/Shows'
 import Login from './components/Login.vue'
+import AddEvent from './components/AddEvent.vue'
 
 Vue.config.productionTip = false
 Vue.use(VueSweetalert2)
@@ -16,7 +17,8 @@ const router = new VueRouter({
   base: __dirname,
   routes: [
     { path: '/', name: 'Shows', component: Shows },
-    { path: '/userlogin/', name: 'Login', component: Login }
+    { path: '/userlogin/', name: 'Login', component: Login },
+    { path: '/addEvent/', name: 'AddEvent', component: AddEvent }
   ]
 })
 
