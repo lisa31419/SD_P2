@@ -88,7 +88,8 @@
               <h4 class="card-header text-center text-white"><b>{{ show.name }}</b></h4>
               <div class="card-body" style="background-color: whitesmoke;">
                 <div v-for="(artist) in show.artists" :key="artist.id">
-                  <h5>{{ artist.name }}</h5>
+                  <br>
+                  <h6>{{artist.name}}</h6>
                 </div>
                 <h6>{{ show.city }}</h6>
                 <h6>{{ show.place }}</h6>
@@ -103,7 +104,7 @@
                 <button :disabled="just_shows.includes(show)" class="buttonAddToCart buttonsCardWidth btn-lg"
                           @click="addEventToCart(show)"> Add show to cart
                 </button>
-                <button href="#" class="buttonEvents buttonsCardWidth btn-lg"  style="margin-top: 15px; margin-bottom: 10px" @click="addArtistToEvent()">Add Artist to Event</button>
+                <button href="#" class="buttonEvents buttonsCardWidth btn-lg"  style="margin-top: 15px; margin-bottom: 10px" @click="addArtistToEvent(show)">Add Artist to Event</button>
                 <button href="#" class="buttonEvents buttonsCardWidth btn-lg" style="margin-bottom: 15px" @click="deleteArtistFromEvent()">Delete Artist from Event</button>
                 <button href="#" class="buttonDeleteEvent buttonsCardWidth btn-lg" @click="deleteEvent()">Delete Event</button>
               </div>
@@ -182,9 +183,11 @@ export default {
       ],
       shows_added: [],
       just_shows: [],
+      show_to_modify: '',
       index: 0,
       isShowingCart: false,
-      newEvent: true
+      newEvent: true,
+      addArtist: true
     }
   },
   methods: {
@@ -213,7 +216,18 @@ export default {
     },
     updateEvent () {
       this.newEvent = false
-      this.$router.replace({ path: '/addEvent', query: { username: this.username, logged: this.logged, is_admin: 1, token: this.token, newEvent: this.newEvent } })
+      this.$router.replace({ path: '/addEvent', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token, newEvent: this.newEvent } })
+    },
+    addArtistToEvent (show) {
+      this.showWhereModifyArtist(show)
+      this.addArtist = true
+      this.$router.replace({ path: '/artistsInEvent', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token, addArtist: this.addArtist, show_to_modify: this.show_to_modify } })
+    },
+    deleteArtistFromEvent () {
+      console.log('delete')
+    },
+    deleteEvent () {
+      console.log('event')
     },
     getMoneyFromUser () {
       const path = `http://localhost:5000/account/${this.username}`
@@ -290,27 +304,40 @@ export default {
       axios.get(path)
         .then((res) => {
           this.shows = res.data.shows
+          this.getArtistsInShows()
+          console.log(this.shows)
         })
         .catch((error) => {
           console.error(error)
         })
     },
-    addArtistToEvent () {
-      console.log('add')
+    showWhereModifyArtist (show) {
+      this.show_to_modify = { 'show': show }
     },
-    deleteArtistFromEvent () {
-      console.log('delete')
+    getArtistsInShows () {
+      for (let i = 0; i < this.shows.length; i++) {
+        this.setArtistsInShow(this.shows[i])
+      }
     },
-    deleteEvent () {
-      console.log('event')
+    setArtistsInShow (show) {
+      const path = `http://localhost:5000/show/${show.id}/artists`
+      axios.get(path)
+        .then((res) => {
+          show.artists = res.data.artists
+          this.shows[show.id] = show
+          console.log(this.shows[show.id])
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   },
   created () {
+    this.getShows()
     this.username = this.$route.query.username
     this.logged = this.$route.query.logged
     this.is_admin = this.$route.query.is_admin
     this.token = this.$route.query.token
-    this.getShows()
     this.getMoneyFromUser()
   }
 }

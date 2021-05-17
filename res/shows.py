@@ -26,7 +26,7 @@ class Show(Resource):
             new_show = ShowModel(data['name'], data['date'], data['price'], data['total_available_tickets'])
             try:
                 new_show.save_to_db()
-                return {'message': "Show with id [{}] added correctly".format(id)}
+                return {'message': "Show with id [{}] added correctly".format(id)}, id, 200
             except:
                 return {"message": "An error occurred inserting the show."}, 500
 
@@ -93,7 +93,7 @@ class ShowArtistsList(Resource):
     def get(self, id):
         artists_in_show = ShowModel.find_by_id(id).artists
         if artists_in_show:
-            return [x.json() for x in artists_in_show], 200
+            return {'artists': [x.json() for x in artists_in_show]}
         else:
             return {"message": "There are no artists in this show."}, 404
 
@@ -107,6 +107,7 @@ class ShowArtist(Resource):
         else:
             return {"message": "There are no artists with id [{}] in this show.".format(id_artist)}, 404
 
+    @auth.login_required(role='admin')
     def post(self, id_show, id_artist=None):
         # data = Artist.getData(self)
         show_found = ShowModel.find_by_id(id_show)

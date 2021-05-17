@@ -62,6 +62,7 @@
         <h2 class="card-header text-center"><b>Update Event</b><span class="close" @click="goBackToShows()">x</span></h2>
         <div class="card-body" style="text-align: justify;">
           <div class="form-label-group">
+            <br>
             <label for="inputId">Id</label>
             <input type="number" id="inputId" class="form-control"
                    placeholder="Enter id" required autofocus v-model="editShowForm.id">
@@ -73,6 +74,7 @@
                    placeholder="Enter name" required v-model="editShowForm.name">
           </div>
           <div class="form-label-group">
+            <br>
             <label for="inputPlace">Place</label>
             <input type="text" id="inputPlaceEdit" class="form-control"
                    placeholder="Enter place" required autofocus v-model="editShowForm.place">
