@@ -2,6 +2,7 @@ import dateutil.parser
 
 from res.db import db
 
+
 artists_in_shows = db.Table('artists_in_shows',
                             db.Column('id', db.Integer, primary_key=True),
                             db.Column('artist_id', db.Integer, db.ForeignKey('artists.id')),
@@ -16,7 +17,7 @@ class ShowModel(db.Model):
     name = db.Column(db.String(30), unique=True, nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    total_available_tickets = db.Column(db.Integer)
+    total_available_tickets = db.Column(db.Integer, nullable=False)
 
     artists = db.relationship("ArtistModel", secondary=artists_in_shows, backref=db.backref('shows'))
 

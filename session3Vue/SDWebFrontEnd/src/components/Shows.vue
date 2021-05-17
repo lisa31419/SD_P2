@@ -99,8 +99,9 @@
             <div class="card text-white mb-3 text-center" style="background-color: #2F0E68; max-width: 18rem;">
               <div class="card-body">
                 <h4> {{ show.total_available_tickets }} tickets available </h4>
+                <h5 style="color: #ff9c6f "> Show con ID <b>{{shows.indexOf(show) + 1}}</b></h5>
                 <button :disabled="just_shows.includes(show)" class="buttonAddToCart buttonsCardWidth btn-lg"
-                        @click="addEventToCart(show)"> Add show to cart
+                          @click="addEventToCart(show)"> Add show to cart
                 </button>
                 <button href="#" class="buttonEvents buttonsCardWidth btn-lg"  style="margin-top: 15px; margin-bottom: 10px" @click="addArtistToEvent()">Add Artist to Event</button>
                 <button href="#" class="buttonEvents buttonsCardWidth btn-lg" style="margin-bottom: 15px" @click="deleteArtistFromEvent()">Delete Artist from Event</button>
@@ -212,7 +213,7 @@ export default {
     },
     updateEvent () {
       this.newEvent = false
-      this.$router.replace({ path: '/addEvent', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token, newEvent: this.newEvent } })
+      this.$router.replace({ path: '/addEvent', query: { username: this.username, logged: this.logged, is_admin: 1, token: this.token, newEvent: this.newEvent } })
     },
     getMoneyFromUser () {
       const path = `http://localhost:5000/account/${this.username}`

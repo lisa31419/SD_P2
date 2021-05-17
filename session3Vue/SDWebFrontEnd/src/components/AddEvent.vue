@@ -6,15 +6,15 @@
         <h2 class="card-header text-center"><b>Add New Event</b><span class="close" @click="goBackToShows()">x</span></h2>
         <div class="card-body" style="text-align: justify;">
           <div class="form-label-group">
-            <label for="inputPlace">Place</label>
-            <input type="text" id="inputPlace" class="form-control"
-                   placeholder="Enter place" required autofocus v-model="addShowForm.place">
-          </div>
-          <div class="form-label-group">
             <br>
             <label for="inputName">Name</label>
             <input type="text" id="inputName" class="form-control"
                    placeholder="Enter name" required v-model="addShowForm.name">
+          </div>
+          <div class="form-label-group">
+            <label for="inputPlace">Place</label>
+            <input type="text" id="inputPlace" class="form-control"
+                   placeholder="Enter place" required autofocus v-model="addShowForm.place">
           </div>
           <div class="form-label-group">
             <br>
@@ -73,6 +73,11 @@
                    placeholder="Enter name" required v-model="editShowForm.name">
           </div>
           <div class="form-label-group">
+            <label for="inputPlace">Place</label>
+            <input type="text" id="inputPlaceEdit" class="form-control"
+                   placeholder="Enter place" required autofocus v-model="editShowForm.place">
+          </div>
+          <div class="form-label-group">
             <br>
             <label for="inputCountry">Country</label>
             <input type="text" id="inputCountryEdit" class="form-control"
@@ -104,9 +109,9 @@
           </div>
           <br>
           <div class="d-flex justify-content-center" >
-            <button id="gradSubmit" class="btn buttonSubmit btn-lg text-white" type="submit" @click="onSubmit">Submit</button>
+            <button id="gradSubmit" class="btn buttonSubmit btn-lg text-white" type="submit" @click="onSubmitUpdate">Submit</button>
             <hr>
-            <button id="gradReset" class="btn buttonReset btn-lg text-white" type="reset" @click="onReset">Reset</button>
+            <button id="gradReset" class="btn buttonReset btn-lg text-white" type="reset" @click="onResetUpdate">Reset</button>
           </div>
         </div>
       </div>
@@ -128,8 +133,8 @@ export default {
       is_admin: 1,
       token: '',
       addShowForm: {
-        place: '',
         name: '',
+        place: '',
         country: '',
         city: '',
         date: '',
@@ -153,13 +158,23 @@ export default {
       this.$router.replace({ path: '/', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token } })
     },
     initForm () {
-      this.addShowForm.place = ''
       this.addShowForm.name = ''
+      this.addShowForm.place = ''
       this.addShowForm.country = ''
       this.addShowForm.city = ''
       this.addShowForm.date = ''
       this.addShowForm.price = ''
       this.addShowForm.total_available_tickets = ''
+    },
+    editingInitForm () {
+      this.editShowForm.id = ''
+      this.editShowForm.name = ''
+      this.editShowForm.place = ''
+      this.editShowForm.country = ''
+      this.editShowForm.city = ''
+      this.editShowForm.date = ''
+      this.editShowForm.price = ''
+      this.editShowForm.total_available_tickets = ''
     },
     onReset (event) {
       event.preventDefault()
@@ -194,6 +209,39 @@ export default {
           console.error(error)
         })
     },
+    onSubmitUpdate (evt) {
+      evt.preventDefault()
+      const parameters = {
+        name: this.editShowForm.name,
+        date: this.editShowForm.date,
+        city: this.editShowForm.city,
+        country: this.editShowForm.country,
+        price: parseFloat(this.editShowForm.price),
+        total_available_tickets: parseInt(this.editShowForm.total_available_tickets)
+      }
+      this.updateShow(parameters)
+      this.editingInitForm()
+    },
+    updateShow (parameters) {
+      const path = `http://localhost:5000/show/${this.editShowForm.id}`
+      console.log(this.editShowForm.date)
+      axios.put(path, parameters, {
+        auth: {username: this.token}
+      }).then((res) => {
+        this.token = res.data.token
+        this.eventUpdatedAlert()
+        this.goBackToShows()
+      })
+        .catch((error) => {
+          this.errorInEventAlert()
+          console.error(error)
+        })
+    },
+    onResetUpdate (event) {
+      event.preventDefault()
+      // Reset our form values
+      this.editingInitForm()
+    },
     errorInEventAlert () {
       // Use sweetalert2
       this.$swal('Error', 'Something went wrong, check your params.', 'error')
@@ -201,6 +249,10 @@ export default {
     eventCreatedAlert () {
       // Use sweetalert2
       this.$swal('Success', 'Event created successfully.', 'success')
+    },
+    eventUpdatedAlert () {
+      // Use sweetalert2
+      this.$swal('Success', 'Event updated successfully.', 'success')
     }
   },
   created () {
@@ -219,7 +271,7 @@ export default {
 body  {
   background-image: url("https://quientocaque.com/files/45308956/27/IMAGE1/concierto.jpg");
   background-color: black;
-  height: 820px;
+  height: 860px;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

@@ -3,6 +3,7 @@ from flask_restful import reqparse, Resource
 
 from models.artist import ArtistModel
 from models.show import ShowModel
+from models.accounts import *
 from res.db import db
 
 
@@ -14,6 +15,7 @@ class Show(Resource):
         else:
             return 404
 
+    @auth.login_required(role='admin')
     def post(self, id=None):
         data = self.getData()
 
@@ -31,6 +33,7 @@ class Show(Resource):
         else:
             return {'message': "Show with id [{}] already exists".format(id)}
 
+    @auth.login_required(role='admin')
     def delete(self, id):
         if id is None or self.get(id) == 404:
             return {'message': "Id must be in the list"}, 404
@@ -42,18 +45,24 @@ class Show(Resource):
         except:
             return {'message': "Error while deleting the show"}, 500
 
+    @auth.login_required(role='admin')
     def put(self, id):
+        print("he entrado en el put")
         data = self.getData()
+        print("he pasado el data")
 
         if self.get(id) == 404:
             self.post(id)
             return {'message': "Show with id [{}] will be created".format(id)}
         else:
+            print("estoy en el else")
             show_to_update = ShowModel.find_by_id(id)
             show_to_update.name = data['name']
+            print(data['date'])
             show_to_update.date = dateutil.parser.parse(data['date'])
             show_to_update.price = data['price']
-            show_to_update.total_available_tickets = data['total_available_tickets ']
+            print(data['total_available_tickets'])
+            show_to_update.total_available_tickets = data['total_available_tickets']
             db.session.commit()
             return {'message': "Show with id [{}] updated".format(id)}
 
