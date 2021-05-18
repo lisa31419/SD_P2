@@ -12,6 +12,7 @@
                    placeholder="Enter name" required v-model="addShowForm.name">
           </div>
           <div class="form-label-group">
+            <br>
             <label for="inputPlace">Place</label>
             <input type="text" id="inputPlace" class="form-control"
                    placeholder="Enter place" required autofocus v-model="addShowForm.place">
@@ -62,7 +63,6 @@
         <h2 class="card-header text-center"><b>Update Event</b><span class="close" @click="goBackToShows()">x</span></h2>
         <div class="card-body" style="text-align: justify;">
           <div class="form-label-group">
-            <br>
             <label for="inputId">Id</label>
             <input type="number" id="inputId" class="form-control"
                    placeholder="Enter id" required autofocus v-model="editShowForm.id">
@@ -157,7 +157,7 @@ export default {
   },
   methods: {
     goBackToShows () {
-      this.$router.replace({ path: '/', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token } })
+      this.$router.replace({ path: '/', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token, addArtist: true } })
     },
     initForm () {
       this.addShowForm.name = ''
@@ -202,13 +202,17 @@ export default {
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
-        this.token = res.data.token
+        console.log(res.data)
         this.eventCreatedAlert()
         this.goBackToShows()
       })
         .catch((error) => {
-          this.errorInEventAlert()
-          console.error(error)
+          if (error !== 500) {
+            this.errorInEventAlert()
+            console.error(error)
+          }
+          this.noArtistsAlert()
+          this.goBackToShows()
         })
     },
     onSubmitUpdate (evt) {
@@ -248,6 +252,10 @@ export default {
       // Use sweetalert2
       this.$swal('Error', 'Something went wrong, check your params.', 'error')
     },
+    noArtistsAlert () {
+      // Use sweetalert2
+      this.$swal('For your information', 'This new show does not have artists yet. Why don´t you add them?', 'info')
+    },
     eventCreatedAlert () {
       // Use sweetalert2
       this.$swal('Success', 'Event created successfully.', 'success')
@@ -273,7 +281,7 @@ export default {
 body  {
   background-image: url("https://quientocaque.com/files/45308956/27/IMAGE1/concierto.jpg");
   background-color: black;
-  height: 860px;
+  height: 960px;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

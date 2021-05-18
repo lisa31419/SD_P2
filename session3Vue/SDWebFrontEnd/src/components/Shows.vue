@@ -87,7 +87,7 @@
               <img alt="Card image cap" class="card-img-top" style="margin-bottom: 2px" src="static/fest.jpeg">
               <h4 class="card-header text-center text-white"><b>{{ show.name }}</b></h4>
               <div class="card-body" style="background-color: whitesmoke;">
-                <div v-for="(artist) in show.artists" :key="artist.id">
+                <div v-for="(artist) in artistas[shows.indexOf(show)]" :key="artist.id">
                   <h6>{{artist.name}}</h6>
                 </div>
                 <h6>{{ show.city }}</h6>
@@ -99,7 +99,7 @@
             <div class="card text-white mb-3 text-center" style="background-color: #2F0E68; max-width: 18rem;">
               <div class="card-body">
                 <h4> {{ show.total_available_tickets }} tickets available </h4>
-                <h5 style="color: #ff9c6f "> Show con ID <b>{{shows.indexOf(show) + 1}}</b></h5>
+                <h5 style="color: #ff9c6f "> Show con ID <b>{{shows[shows.indexOf(show)].id}}</b></h5>
                 <button :disabled="just_shows.includes(show)" class="buttonAddToCart buttonsCardWidth btn-lg"
                           @click="addEventToCart(show)"> Add show to cart
                 </button>
@@ -182,8 +182,10 @@ export default {
       ],
       shows_added: [],
       just_shows: [],
+      artistas: [],
       show_to_modify: '',
       index: 0,
+      showsLength: 0,
       isShowingCart: false,
       newEvent: true,
       addArtist: true
@@ -303,8 +305,8 @@ export default {
       axios.get(path)
         .then((res) => {
           this.shows = res.data.shows
+          this.showsLength = this.shows.length
           this.getArtistsInShows()
-          console.log(this.shows)
         })
         .catch((error) => {
           console.error(error)
@@ -314,26 +316,19 @@ export default {
       this.show_to_modify = { 'show': show }
     },
     getArtistsInShows () {
-      for (let i = 0; i < this.shows.length; i++) {
-        this.setArtistsInShow(this.shows[i])
+      for (let i = 0; i < this.showsLength; i++) {
+        const path = `http://localhost:5000/show/${this.shows[i].id}/artists`
+        axios.get(path)
+          .then((res) => {
+            this.artistas.push(res.data.artists)
+            // this.shows.shift()
+            // this.shows.push(show)
+          })
+          .catch((error) => {
+            console.error(error)
+          })
       }
-    },
-    setArtistsInShow (show) {
-      const path = `http://localhost:5000/show/${show.id}/artists`
-      axios.get(path)
-        .then((res) => {
-          const index = this.shows.indexOf(show)
-          show.artists = res.data.artists
-          this.shows.push(show)
-          let fin = this.shows.length
-          console.log(fin)
-          fin = (fin / 2) + 2
-          this.shows = this.shows.slice(0, fin)
-          console.log(this.shows[index])
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      console.log(this.shows)
     }
   },
   created () {
@@ -343,6 +338,7 @@ export default {
     this.is_admin = this.$route.query.is_admin
     this.token = this.$route.query.token
     this.getMoneyFromUser()
+    // this.getArtistsInShows()
   }
 }
 </script>
