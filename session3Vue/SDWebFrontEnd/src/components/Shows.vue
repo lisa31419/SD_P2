@@ -88,7 +88,6 @@
               <h4 class="card-header text-center text-white"><b>{{ show.name }}</b></h4>
               <div class="card-body" style="background-color: whitesmoke;">
                 <div v-for="(artist) in show.artists" :key="artist.id">
-                  <br>
                   <h6>{{artist.name}}</h6>
                 </div>
                 <h6>{{ show.city }}</h6>
@@ -323,9 +322,14 @@ export default {
       const path = `http://localhost:5000/show/${show.id}/artists`
       axios.get(path)
         .then((res) => {
+          const index = this.shows.indexOf(show)
           show.artists = res.data.artists
-          this.shows[show.id] = show
-          console.log(this.shows[show.id])
+          this.shows.push(show)
+          let fin = this.shows.length
+          console.log(fin)
+          fin = (fin / 2) + 2
+          this.shows = this.shows.slice(0, fin)
+          console.log(this.shows[index])
         })
         .catch((error) => {
           console.error(error)
