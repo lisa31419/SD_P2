@@ -92,7 +92,7 @@
                 </div>
                 <h6>{{ show.city }}</h6>
                 <h6>{{ show.place }}</h6>
-                <h6>{{ show.date }}</h6>
+                <h6>{{ show.date.substring(0,10) }}</h6>
                 <h6>{{ show.price }} €</h6>
               </div>
             </div>
