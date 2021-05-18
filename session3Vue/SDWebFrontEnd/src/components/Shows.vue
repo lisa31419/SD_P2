@@ -105,7 +105,7 @@
                 </button>
                 <button href="#" class="buttonEvents buttonsCardWidth btn-lg"  style="margin-top: 15px; margin-bottom: 10px" @click="addArtistToEvent(show)">Add Artist to Event</button>
                 <button href="#" class="buttonEvents buttonsCardWidth btn-lg" style="margin-bottom: 15px" @click="deleteArtistFromEvent()">Delete Artist from Event</button>
-                <button href="#" class="buttonDeleteEvent buttonsCardWidth btn-lg" @click="deleteEvent()">Delete Event</button>
+                <button href="#" class="buttonDeleteEvent buttonsCardWidth btn-lg" @click="deleteEvent(show.id)">Delete Event</button>
               </div>
             </div>
           </div>
@@ -227,7 +227,11 @@ export default {
     deleteArtistFromEvent () {
       console.log('delete')
     },
-    deleteEvent () {
+    deleteEvent (show) {
+      const path = `http://localhost:5000/show/${show}`
+      axios.delete(path, {
+        auth: {username: this.token}
+      })
       console.log('event')
     },
     getMoneyFromUser () {
