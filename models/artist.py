@@ -17,7 +17,7 @@ class ArtistModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(30), unique=True, nullable=False)
     country = db.Column(db.String(30), nullable=False)
-    disciplines = db.relationship("DisciplineModel", backref='artists')
+    discipline = db.Column(db.Enum(*disciplines))
 
     def __init__(self, name, country, discipline):
         self.name = name
@@ -26,7 +26,7 @@ class ArtistModel(db.Model):
 
     def json(self):
         return {'id': self.id, 'name': self.name, 'country': self.country,
-                'disciplines': [discipline.json() for discipline in self.disciplines]}
+                'disciplines': [discipline.json() for discipline in self.discipline]}
 
     def save_to_db(self):
         db.session.add(self)
