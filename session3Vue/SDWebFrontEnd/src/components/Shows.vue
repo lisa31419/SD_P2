@@ -232,7 +232,7 @@ export default {
       axios.delete(path, {
         auth: {username: this.token}
       })
-      console.log('event')
+      window.location.reload()
     },
     getMoneyFromUser () {
       const path = `http://localhost:5000/account/${this.username}`

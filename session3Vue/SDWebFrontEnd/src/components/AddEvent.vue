@@ -186,10 +186,10 @@ export default {
     onSubmit (evt) {
       evt.preventDefault()
       const parameters = {
-        place: this.addShowForm.place,
         name: this.addShowForm.name,
-        city: this.addShowForm.city,
+        place: this.addShowForm.place,
         country: this.addShowForm.country,
+        city: this.addShowForm.city,
         date: this.addShowForm.date,
         price: this.addShowForm.price,
         total_available_tickets: this.addShowForm.total_available_tickets
