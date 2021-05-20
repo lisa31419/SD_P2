@@ -2,13 +2,20 @@ from res.db import db
 
 disciplines = ('THEATRE', 'MUSIC', 'DANCE', 'CIRCUS', 'OTHER')
 
+artists_discipline = db.Table('artists_discipline',
+                              db.Column('id', db.Integer, primary_key=True),
+                              db.Column('artist_id', db.Integer, db.ForeignKey('artists.id')),
+                              db.Column('discipline_id', db.Integer, db.ForeignKey('disciplines.id')))
+
 
 class DisciplineModel(db.Model):
     __tablename__ = 'disciplines'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     discipline = db.Column(db.Enum(*disciplines), nullable=False)
-    artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'), nullable=False)
+
+    def __init__(self, discipline):
+        self.discipline = discipline
 
 
 class ArtistModel(db.Model):
@@ -17,7 +24,7 @@ class ArtistModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(30), unique=True, nullable=False)
     country = db.Column(db.String(30), nullable=False)
-    discipline = db.Column(db.Enum(*disciplines))
+    disciplines = db.relationship("DisciplineModel", secondary=artists_discipline, backref='artists')
 
     def __init__(self, name, country, discipline):
         self.name = name
@@ -26,7 +33,7 @@ class ArtistModel(db.Model):
 
     def json(self):
         return {'id': self.id, 'name': self.name, 'country': self.country,
-                'disciplines': [discipline.json() for discipline in self.discipline]}
+                'disciplines': [discipline.json() for discipline in self.disciplines]}
 
     def save_to_db(self):
         db.session.add(self)
@@ -47,5 +54,3 @@ class ArtistModel(db.Model):
     @classmethod
     def length(cls):
         return cls.query.count()
-
-

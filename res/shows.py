@@ -4,6 +4,7 @@ from flask_restful import reqparse, Resource
 
 from models.artist import ArtistModel
 from models.show import ShowModel
+from res.artists import Artist
 from res.places import Place
 from models.accounts import *
 from res.db import db
@@ -109,18 +110,19 @@ class ShowArtist(Resource):
 
     @auth.login_required(role='admin')
     def post(self, id_show, id_artist=None):
-        # data = Artist.getData(self)
+        data = Artist.getData(self)
         show_found = ShowModel.find_by_id(id_show)
         artists_in_show = show_found.artists
         if id_artist is None:
             id_artist = ArtistModel.length() + 1
 
         if ArtistModel.find_by_id(id_artist) is None:
-            # new_artist = ArtistModel(data['name'], data['country'], data['disciplines'])
+            new_artist = ArtistModel(data['name'], data['country'], data['disciplines'])
+            print(data['disciplines'])
             try:
-                # new_artist.save_to_db()
-                # artists_in_show.append(new_artist)
-                # show_found.save_to_db()
+                new_artist.save_to_db()
+                artists_in_show.append(new_artist)
+                show_found.save_to_db()
                 return {'message': "Artist with id [{}] created and added correctly to the show.".format(
                     id_artist)}, 200
             except:
