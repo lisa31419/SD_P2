@@ -70,9 +70,7 @@ class AccountsModel(db.Model):
 
 @auth.verify_password
 def verify_password(token, password):
-    print("Autentificando el password")
     g.user = AccountsModel.verify_auth_token(token)
-    print("autentificado")
     print(g.user)
     return g.user
 
