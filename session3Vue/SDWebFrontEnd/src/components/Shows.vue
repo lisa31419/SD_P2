@@ -104,7 +104,7 @@
                           @click="addEventToCart(show)"> Add show to cart
                 </button>
                 <button href="#" class="buttonEvents buttonsCardWidth btn-lg"  style="margin-top: 15px; margin-bottom: 10px" @click="addArtistToEvent(show)">Add Artist to Event</button>
-                <button href="#" class="buttonEvents buttonsCardWidth btn-lg" style="margin-bottom: 15px" @click="deleteArtistFromEvent()">Delete Artist from Event</button>
+                <button href="#" class="buttonEvents buttonsCardWidth btn-lg" style="margin-bottom: 15px" @click="deleteArtistFromEvent(show)">Delete Artist from Event</button>
                 <button href="#" class="buttonDeleteEvent buttonsCardWidth btn-lg" @click="deleteEvent(show.id)">Delete Event</button>
               </div>
             </div>
@@ -224,8 +224,10 @@ export default {
       this.addArtist = true
       this.$router.replace({ path: '/artistsInEvent', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token, addArtist: this.addArtist, show_to_modify: this.show_to_modify } })
     },
-    deleteArtistFromEvent () {
-      console.log('delete')
+    deleteArtistFromEvent (show) {
+      this.showWhereModifyArtist(show)
+      this.addArtist = false
+      this.$router.replace({ path: '/artistsInEvent', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token, addArtist: this.addArtist, show_to_modify: this.show_to_modify } })
     },
     deleteEvent (show) {
       const path = `http://localhost:5000/show/${show}`
