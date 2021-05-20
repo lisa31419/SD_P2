@@ -1,13 +1,11 @@
 <template>
   <body>
   <div v-if="addArtist" class...>
-    <h1 style="opacity: 0"> . </h1>
     <div class="d-flex justify-content-center">
       <div class="card justify-content-md-center" style="width: 32rem">
         <h2 class="card-header text-center"><b>Add Artist to Event</b><span class="close" @click="goBackToShows()">x</span></h2>
         <div class="card-body" style="text-align: justify;">
           <div class="form-label-group">
-            <br>
             <label for="inputName">Artist's Name</label>
             <input type="text" id="inputName" class="form-control"
                    placeholder="Enter artist's name" required v-model="addArtistForm.name">
@@ -186,7 +184,7 @@ export default {
 body  {
   background-image: url("https://quientocaque.com/files/45308956/27/IMAGE1/concierto.jpg");
   background-color: black;
-  height: 600px;
+  height: 620px;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
