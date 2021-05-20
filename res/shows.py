@@ -2,7 +2,7 @@ import dateutil
 import requests
 from flask_restful import reqparse, Resource
 
-from models.artist import ArtistModel
+from models.artist import *
 from models.show import ShowModel
 from res.artists import Artist
 from res.places import Place
@@ -117,9 +117,14 @@ class ShowArtist(Resource):
             id_artist = ArtistModel.length() + 1
 
         if ArtistModel.find_by_id(id_artist) is None:
-            new_artist = ArtistModel(data['name'], data['country'], data['disciplines'])
-            print(data['disciplines'])
+            new_artist = ArtistModel(data['name'], data['country'])
             try:
+                for discipline in data['disciplines']:
+
+                    newDiscipline = DisciplineModel(discipline)
+                    newDiscipline.artist_id = id_artist
+                    newDiscipline.save_to_db()
+
                 new_artist.save_to_db()
                 artists_in_show.append(new_artist)
                 show_found.save_to_db()

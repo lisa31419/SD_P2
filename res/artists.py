@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask_restful import reqparse, Resource
 
-from models.artist import ArtistModel
+from models.artist import ArtistModel, DisciplineModel
 from models.show import ShowModel
 from models.accounts import *
 from res.db import db
@@ -24,8 +24,12 @@ class Artist(Resource):
             id = ArtistModel.length() + 1
 
         if self.get(id) == 404:
-            new_artist = ArtistModel(data['name'], data['country'], data['disciplines'])
+            new_artist = ArtistModel(data['name'], data['country'])
             try:
+                for discipline in data['disciplines']:
+                    newDiscipline = DisciplineModel(discipline)
+                    newDiscipline.artist_id = id
+                    newDiscipline.save_to_db()
                 new_artist.save_to_db()
                 return id, 200
             except:

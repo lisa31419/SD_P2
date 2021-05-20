@@ -116,6 +116,7 @@ export default {
       }).then((res) => {
         console.log(res.data)
         this.addArtistForm.id = res.data
+        console.log(this.addArtistForm.id)
         const params = {
           id: this.addArtistForm.id,
           name: this.addArtistForm.name,
