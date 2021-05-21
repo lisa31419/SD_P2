@@ -47,6 +47,10 @@ class ArtistModel(db.Model):
         return cls.query.get(id)
 
     @classmethod
+    def find_by_name(cls, name):
+        return cls.query.filter(ArtistModel.name == name).first()
+
+    @classmethod
     def get_all(cls):
         return cls.query.all()
 

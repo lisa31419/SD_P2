@@ -143,7 +143,12 @@ export default {
         country: this.addArtistForm.country,
         disciplines: this.addArtistForm.disciplines
       }
-      this.addNewArtist(parameters)
+      if (this.required(parameters)) {
+        this.addNewArtist(parameters)
+      } else {
+        this.errorInArtistAlert()
+      }
+      this.initFormArtists()
     },
     addNewArtist (parameters) {
       const path = `http://localhost:5000/artist`
@@ -197,7 +202,12 @@ export default {
         id: this.deleteArtistForm.id,
         name: this.deleteArtistForm.name
       }
-      this.deleteArtistInShow(parameters)
+      if (this.required(parameters)) {
+        this.deleteArtistInShow(parameters)
+      } else {
+        this.errorInArtistAlert()
+      }
+      this.initFormDeleteArtists()
     },
     deleteArtistInShow (parameters) {
       const path = `http://localhost:5000/show/${this.show_to_modify.id}/artist/${this.deleteArtistForm.id}`
@@ -219,6 +229,14 @@ export default {
       evt.preventDefault()
       // Reset our form values
       this.initFormDeleteArtists()
+    },
+    required (params) {
+      for (const elem in params) {
+        if (params[elem.toString()].length === 0) {
+          return false
+        }
+      }
+      return true
     },
     errorInArtistAlert () {
       // Use sweetalert2
@@ -248,9 +266,10 @@ export default {
 
 <style scoped>
 body  {
-  background-image: url("https://quientocaque.com/files/45308956/27/IMAGE1/concierto.jpg");
+  background-image: url('../../static/cool-background.png');
   background-color: black;
-  height: 620px;
+  height: 580px;
+  background-attachment: fixed;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

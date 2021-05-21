@@ -3,7 +3,13 @@
   <div v-if="newEvent" class...>
     <div class="d-flex justify-content-center">
       <div class="card justify-content-md-center" style="width: 32rem">
-        <h2 class="card-header text-center"><b>Add New Event</b><span class="close" @click="goBackToShows()">x</span></h2>
+        <div>
+          <h2 class="card-header">
+            <b class="text-center">Add New Event</b>
+            <span class="close" @click="goBackToShows()">x</span>
+            <h5 class="card-subtitle" style="margin-top: 5px">Introduzca todos lo parametros.</h5>
+          </h2>
+        </div>
         <div class="card-body" style="text-align: justify;">
           <div class="form-label-group">
             <br>
@@ -194,7 +200,11 @@ export default {
         price: this.addShowForm.price,
         total_available_tickets: this.addShowForm.total_available_tickets
       }
-      this.addShow(parameters)
+      if (this.required(parameters)) {
+        this.addShow(parameters)
+      } else {
+        this.errorInEventAlert()
+      }
       this.initForm()
     },
     addShow (parameters) {
@@ -225,8 +235,20 @@ export default {
         price: parseFloat(this.editShowForm.price),
         total_available_tickets: parseInt(this.editShowForm.total_available_tickets)
       }
-      this.updateShow(parameters)
+      if (this.required(parameters)) {
+        this.updateShow(parameters)
+      } else {
+        this.errorInEventAlert()
+      }
       this.editingInitForm()
+    },
+    required (params) {
+      for (const elem in params) {
+        if (params[elem.toString()].length === 0) {
+          return false
+        }
+      }
+      return true
     },
     updateShow (parameters) {
       const path = `http://localhost:5000/show/${this.editShowForm.id}`
@@ -278,9 +300,10 @@ export default {
 
 <style scoped>
 body  {
-  background-image: url("https://quientocaque.com/files/45308956/27/IMAGE1/concierto.jpg");
+  background: rgb(255,0,156);
+  background: linear-gradient(90deg, rgba(255,0,156,1) 0%, rgba(255,63,0,1) 35%, rgba(255,196,120,1) 100%);
   background-color: black;
-  height: 960px;
+  height: 920px;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
