@@ -20,10 +20,10 @@ class ShowModel(db.Model):
     total_available_tickets = db.Column(db.Integer, nullable=False)
 
     artists = db.relationship("ArtistModel", secondary=artists_in_shows, backref=db.backref('shows'))
-
     # places = db.relationship('PlaceModel', backref='places', lazy=True)
-    # place_id = db.Column(db.Integer, db.ForeignKey('places.id'))
-    # place = db.relationship("PlaceModel")
+
+    place_id = db.Column(db.Integer, db.ForeignKey('places.id'))
+    place = db.relationship("PlaceModel")
 
     def __init__(self, name, date, price, total_available_tickets):
         self.name = name

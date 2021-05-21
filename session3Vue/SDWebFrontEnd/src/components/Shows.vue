@@ -2,7 +2,7 @@
   <div id="app">
     <body style="background-color:black;">
     <!-- Displaying in case button go to Cart True-->
-    <div v-if="isShowingCart" class... class="background">
+    <div v-if="isShowingCart" class="background">
       <!-- Show nothing id cart is empty-->
       <div v-if="shows_added.length > 0">
         <h1 style="opacity: 0">space</h1>
@@ -11,13 +11,15 @@
           <div class="card justify-content-md-center" style="width: 70rem">
           <div class="row justify-content-md-center">
             <div class="col-sm-10 justify-content-md-center">
-              <h1 class="card-header text-center" style="justify-content: center;background: white"><b>Cart</b></h1>
+              <h1 class="card-header text-center color-title-cart" style="justify-content: center">
+                <b>C A R T</b>
+              </h1>
               <table class="table table-hover">
                 <thead>
                 <tr>
                   <th scope="col" style="text-align: center">Event Name</th>
-                  <th scope="col" style="text-align: center">Quantity</th>
-                  <th scope="col" style="text-align: center">Total Tickets</th>
+                  <th scope="col" style="text-align: center">Ticket's Quantity</th>
+                  <th scope="col" style="text-align: center">Price per Ticket</th>
                   <th scope="col" style="text-align: center">Total Price</th>
                   <th scope="col" style="text-align: center"></th>
                   <th></th>
@@ -51,12 +53,12 @@
         </div>
       </div>
       <!-- Show the cart if it is not empty-->
-      <div v-else class... class="background">
+      <div v-else class="background">
         <div class="container" style="width: max-content; height: 600px">
           <h1 style="opacity: 0">space</h1>
           <h1 style="opacity: 0">space</h1>
           <h1 style="opacity: 0">space</h1>
-          <h1 class="text-center text-white" style="align-content: center"><b>Cart</b></h1>
+          <h1 class="text-center text-white" style="align-content: center; font-size: 50px;font-weight: bold"><b>C A R T</b></h1>
           <h4 class="text-center text-white"> Your cart is currently empty.</h4>
           <br>
           <div style="text-align: center;">
@@ -69,15 +71,15 @@
     <!-- Show the shows when button is deactivated-->
     <div v-else class...>
       <img alt="Card image cap" class="card-img-top" src="static/concert.png">
-      <button id="gradCart" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="goToCart()"><b>View Cart</b></button>
+      <button :disabled="is_admin.toString() === '1' || this.logged === undefined" id="gradCart" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="goToCart()"><b>View Cart</b></button>
       <button id="gradInfo" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="displayInfo()"><b>Your information</b></button>
       <button href="#" v-if="this.logged" id="gradLogOut" style="float:left" class='btn buttonWidth text-white' @click="logOut()"><b>Log Out</b></button>
       <button href="#" v-else-if="!this.logged" id="gradLogIn" style="float:left" class='btn buttonWidth text-white' @click="goToLogIn()"><b>Log In</b></button>
       <hr><hr><hr>
       <!--v-if="this.is_admin"-->
       <div class="flex-parent justify-content: center" style="text-align: center">
-        <button href="#" style="margin-right: 25px;" class="buttonEvents buttonWidth25 btn-lg" @click="addNewEvent()"><b>Add New Event</b></button>
-        <button href="#" class="buttonEvents buttonWidth25 btn-lg" @click="updateEvent()"><b>Update Event</b></button>
+        <button v-if="is_admin.toString() === '1'" href="#" style="margin-right: 25px;" class="buttonEvents buttonWidth25 btn-lg" @click="addNewEvent()"><b>Add New Event</b></button>
+        <button v-if="is_admin.toString() === '1'" href="#" class="buttonEvents buttonWidth25 btn-lg" @click="updateEvent()"><b>Update Event</b></button>
       </div>
       <hr><hr>
       <div class="container">
@@ -87,26 +89,30 @@
               <img alt="Card image cap" class="card-img-top" style="margin-bottom: 2px" src="static/fest.jpeg">
               <h4 class="card-header text-center text-white"><b>{{ show.name }}</b></h4>
               <div class="card-body" style="background-color: whitesmoke;">
-                <div v-for="(artist) in show.artists" :key="artist.id">
-                  <br>
-                  <h6>{{artist.name}}</h6>
+                <div v-for="(artist) in artistas[shows.indexOf(show)]" :key="artist.id">
+                  <h4 v-if="is_admin.toString() === '0'">{{artist.name}}</h4>
+                  <h4 v-else-if="is_admin.toString() === '1'">{{artist.name + " ID: " + artist.id}}</h4>
+                </div>
+                <div v-for="(place) in places[shows.indexOf(show)]" :key="place.id">
+                  <h5>{{place.name}}</h5>
+                  <h5>{{place.city + ','}} {{place.country}}</h5>
                 </div>
                 <h6>{{ show.city }}</h6>
                 <h6>{{ show.place }}</h6>
-                <h6>{{ show.date }}</h6>
+                <h6>{{ show.date.substring(0,10) }}</h6>
                 <h6>{{ show.price }} €</h6>
               </div>
             </div>
             <div class="card text-white mb-3 text-center" style="background-color: #2F0E68; max-width: 18rem;">
               <div class="card-body">
                 <h4> {{ show.total_available_tickets }} tickets available </h4>
-                <h5 style="color: #ff9c6f "> Show con ID <b>{{shows.indexOf(show) + 1}}</b></h5>
-                <button :disabled="just_shows.includes(show)" class="buttonAddToCart buttonsCardWidth btn-lg"
+                <h5 v-if="is_admin.toString() === '1'" style="color: #ff9c6f "> Show con ID <b>{{shows[shows.indexOf(show)].id}}</b></h5>
+                <button v-if="is_admin.toString() === '0'" :disabled="just_shows.includes(show)" class="buttonAddToCart buttonsCardWidth btn-lg"
                           @click="addEventToCart(show)"> Add show to cart
                 </button>
-                <button href="#" class="buttonEvents buttonsCardWidth btn-lg"  style="margin-top: 15px; margin-bottom: 10px" @click="addArtistToEvent(show)">Add Artist to Event</button>
-                <button href="#" class="buttonEvents buttonsCardWidth btn-lg" style="margin-bottom: 15px" @click="deleteArtistFromEvent()">Delete Artist from Event</button>
-                <button href="#" class="buttonDeleteEvent buttonsCardWidth btn-lg" @click="deleteEvent()">Delete Event</button>
+                <button v-if="is_admin.toString() === '1'" href="#" class="buttonEvents buttonsCardWidth btn-lg"  style="margin-top: 15px; margin-bottom: 10px" @click="addArtistToEvent(show)">Add Artist to Event</button>
+                <button v-if="is_admin.toString() === '1'" href="#" class="buttonEvents buttonsCardWidth btn-lg" style="margin-bottom: 10px" @click="deleteArtistFromEvent(show)">Delete Artist from Event</button>
+                <button v-if="is_admin.toString() === '1'" href="#" class="buttonDeleteEvent buttonsCardWidth btn-lg" @click="deleteEvent(show.id)">Delete Event</button>
               </div>
             </div>
           </div>
@@ -143,7 +149,7 @@ export default {
             }
           ],
           city: 'Barcelona',
-          place: 'Parc del Forum',
+          place_id: 0,
           date: '2020-07-03',
           price: 100,
           total_available_tickets: 100
@@ -162,7 +168,7 @@ export default {
             }
           ],
           city: 'Barcelona',
-          place: 'Parc del Forum',
+          place_id: 0,
           date: '2020-07-05',
           price: 24,
           total_available_tickets: 100
@@ -175,7 +181,7 @@ export default {
             }
           ],
           city: 'Barcelona',
-          place: 'Sant Jordi',
+          place_id: 0,
           date: '2020-08-22',
           price: 70,
           total_available_tickets: 100
@@ -183,8 +189,12 @@ export default {
       ],
       shows_added: [],
       just_shows: [],
+      artistas: [],
+      places: [],
       show_to_modify: '',
       index: 0,
+      is_admin: 0,
+      showsLength: 0,
       isShowingCart: false,
       newEvent: true,
       addArtist: true
@@ -196,6 +206,9 @@ export default {
     },
     goToShows () {
       this.isShowingCart = false
+      for (let i = 0; i < this.shows_added.length; i++) {
+        this.money_available += this.shows_added[i].show.price * this.shows_added[i].quantity
+      }
     },
     goToLogIn () {
       this.logged = false
@@ -203,12 +216,22 @@ export default {
     },
     displayInfo () {
       // Use sweetalert2
-      this.$swal('Your current information', 'You have ' + this.shows_added.length + ' tickets in Cart and your current available money is ' + this.money_available + '€.', 'info')
+      if (this.is_admin.toString() === '1') {
+        this.$swal('Your current information', 'You are in Administrator mode. This means you will not interact with the Cart, just the shows. Have fun!! ', 'info')
+      } else if (this.is_admin.toString() === '0' && this.logged === undefined) {
+        this.$swal('Your current information', 'You are not logged in. This means you can not interact with the Cart, nor the Shows. Create an account if you haven´t done it yet!! ', 'warning')
+      } else {
+        this.$swal('Your current information', 'You have ' + this.shows_added.length + ' tickets in Cart and your current available money is ' + this.money_available + '€.', 'info')
+      }
+    },
+    errorInShowAlert () {
+      // Use sweetalert2
+      this.$swal('Error', 'Something went wrong while deleting the show.', 'error')
     },
     logOut () {
       this.logged = false
       this.$router.push({ path: '/' })
-      window.location.reload()
+      location.reload()
     },
     addNewEvent () {
       this.newEvent = true
@@ -223,11 +246,24 @@ export default {
       this.addArtist = true
       this.$router.replace({ path: '/artistsInEvent', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token, addArtist: this.addArtist, show_to_modify: this.show_to_modify } })
     },
-    deleteArtistFromEvent () {
-      console.log('delete')
+    deleteArtistFromEvent (show) {
+      this.showWhereModifyArtist(show)
+      this.addArtist = false
+      this.$router.replace({ path: '/artistsInEvent', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token, addArtist: this.addArtist, show_to_modify: this.show_to_modify } })
     },
-    deleteEvent () {
-      console.log('event')
+    deleteEvent (show) {
+      const path = `http://localhost:5000/show/${show}`
+      axios.delete(path, {
+        auth: {username: this.token}
+      }).then((res) => {
+        console.log('Show deleted correctly with status code ' + res.statusText)
+        location.reload()
+      })
+        .catch((error) => {
+          console.error(error)
+          this.errorInShowAlert()
+          this.initFormArtists()
+        })
     },
     getMoneyFromUser () {
       const path = `http://localhost:5000/account/${this.username}`
@@ -248,12 +284,16 @@ export default {
       if (this.money_available >= tickets['show'].price) {
         tickets['quantity'] += 1
         this.money_available -= tickets['show'].price
+        let indice = this.just_shows.indexOf(tickets.show)
+        this.shows_added[indice].show.total_available_tickets -= 1
       }
     },
     returnTickets (tickets) {
       if (tickets['quantity'] > 0) {
         tickets['quantity'] -= 1
         this.money_available += tickets['show'].price
+        let indice = this.just_shows.indexOf(tickets.show)
+        this.shows_added[indice].show.total_available_tickets += 1
       }
     },
     addEventToCart (show) {
@@ -263,11 +303,9 @@ export default {
       }
     },
     deleteEventFromCart (show) {
-      let indice = this.just_shows.indexOf(show)
-      // let showTemp = this.shows_added[indice]
-      if (show['queantity'] > 0) {
-        this.money_available += show['show'].price
-      }
+      let indice = this.just_shows.indexOf(show.show)
+      this.money_available += this.shows_added[indice].show.price * this.shows_added[indice].quantity
+      this.shows_added[indice].show.total_available_tickets += this.shows_added[indice].quantity
       this.just_shows.splice(indice, 1)
       this.shows_added.splice(indice, 1)
     },
@@ -294,9 +332,7 @@ export default {
           tickets_bought: this.shows_added[i].quantity
         }
         listTemp.push(parameters)
-        // this.shows_added[i].tickets_available -= this.shows_added[i].quantity
       }
-      console.log(listTemp)
       this.addPurchase({orders: listTemp})
     },
     getShows () {
@@ -304,8 +340,9 @@ export default {
       axios.get(path)
         .then((res) => {
           this.shows = res.data.shows
+          this.showsLength = this.shows.length
           this.getArtistsInShows()
-          console.log(this.shows)
+          this.getPlacesInShows()
         })
         .catch((error) => {
           console.error(error)
@@ -315,28 +352,48 @@ export default {
       this.show_to_modify = { 'show': show }
     },
     getArtistsInShows () {
-      for (let i = 0; i < this.shows.length; i++) {
-        this.setArtistsInShow(this.shows[i])
+      for (let i = 0; i < this.showsLength; i++) {
+        const path = `http://localhost:5000/show/${this.shows[i].id}/artists`
+        axios.get(path)
+          .then((res) => {
+            this.artistas.push(res.data.artists)
+          })
+          .catch((error) => {
+            if (error.response.status === 404) {
+              console.log('There are no artists in the show with ID ' + this.shows[i].id)
+            } else {
+              console.error(error)
+            }
+          })
       }
     },
-    setArtistsInShow (show) {
-      const path = `http://localhost:5000/show/${show.id}/artists`
-      axios.get(path)
-        .then((res) => {
-          show.artists = res.data.artists
-          this.shows[show.id] = show
-          console.log(this.shows[show.id])
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+    getPlacesInShows () {
+      for (let i = 0; i < this.showsLength; i++) {
+        const path = `http://localhost:5000/place/${this.shows[i].place_id}`
+        console.log(this.shows[i])
+        axios.get(path)
+          .then((res) => {
+            this.places.push([res.data.place])
+          })
+          .catch((error) => {
+            if (error.response.status === 404) {
+              console.log('There are no places in the show with ID ' + this.shows[i].id)
+            } else {
+              console.error(error)
+            }
+          })
+      }
     }
   },
   created () {
     this.getShows()
     this.username = this.$route.query.username
     this.logged = this.$route.query.logged
-    this.is_admin = this.$route.query.is_admin
+    if (this.$route.query.is_admin === undefined) {
+      this.is_admin = 0
+    } else {
+      this.is_admin = this.$route.query.is_admin
+    }
     this.token = this.$route.query.token
     this.getMoneyFromUser()
   }
@@ -410,8 +467,22 @@ export default {
   background-color: #04128B; /* For browsers that do not support gradients */
   background-image: linear-gradient(#04128B, #040E61);
 }
+.color-title-cart {
+  background: linear-gradient(90deg, rgba(255,156,111,1) 0%, rgba(255,85,162,1) 50%, rgba(0,94,255,1) 100%);
+  color: #0000;
+  -webkit-background-clip: text;
+  font-size: 50px;
+  font-weight: bold;
+}
+
 .background {
   background-image: linear-gradient(180deg, #ff9c6f 0, #ff9277 6.25%, #ff887e 12.5%, #ff7c87 18.75%, #ff708f 25%, #ff6398 31.25%, #ff55a2 37.5%, #ff48ab 43.75%, #f23cb5 50%, #df34bf 56.25%, #c833cb 62.5%, #ad38d6 68.75%, #8c40e1 75%, #5e48ec 81.25%, #0051f4 87.5%, #0058fb 93.75%, #005eff 100%);
+  height: 580px;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
 }
 /* Orange */
 #gradBack {

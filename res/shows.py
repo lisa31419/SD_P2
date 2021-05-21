@@ -1,8 +1,10 @@
 import dateutil
+import requests
 from flask_restful import reqparse, Resource
 
-from models.artist import ArtistModel
+from models.artist import *
 from models.show import ShowModel
+from res.artists import Artist
 from models.accounts import *
 from res.db import db
 
@@ -18,20 +20,25 @@ class Show(Resource):
     @auth.login_required(role='admin')
     def post(self, id=None):
         data = self.getData()
-
+        response_place = requests.post('http://localhost:5000/place', data)
+        place_id = response_place.json()['id']
         if id is None:
             id = ShowModel.length() + 1
+            while self.get(id) != 404:
+                id += 1
 
         if self.get(id) == 404:
             new_show = ShowModel(data['name'], data['date'], data['price'], data['total_available_tickets'])
+            new_show.place_id = place_id
             try:
                 new_show.save_to_db()
-                return {'message': "Show with id [{}] added correctly".format(id)}, id, 200
+                return {'message': "Show with id [{}] added correctly".format(id)}, 200
             except:
                 return {"message": "An error occurred inserting the show."}, 500
 
         else:
-            return {'message': "Show with id [{}] already exists".format(id)}
+            self.put(id)
+            return id, 200
 
     @auth.login_required(role='admin')
     def delete(self, id):
@@ -47,21 +54,16 @@ class Show(Resource):
 
     @auth.login_required(role='admin')
     def put(self, id):
-        print("he entrado en el put")
         data = self.getData()
-        print("he pasado el data")
 
         if self.get(id) == 404:
             self.post(id)
             return {'message': "Show with id [{}] will be created".format(id)}
         else:
-            print("estoy en el else")
             show_to_update = ShowModel.find_by_id(id)
             show_to_update.name = data['name']
-            print(data['date'])
             show_to_update.date = dateutil.parser.parse(data['date'])
             show_to_update.price = data['price']
-            print(data['total_available_tickets'])
             show_to_update.total_available_tickets = data['total_available_tickets']
             db.session.commit()
             return {'message': "Show with id [{}] updated".format(id)}
@@ -71,13 +73,14 @@ class Show(Resource):
 
         # define all input parameters need and its type
 
-        parser.add_argument('name', type=str, required=True, help="This field cannot be left blanck")
+        parser.add_argument('name', type=str, required=True, help="This field cannot be left blank")
+        parser.add_argument('place', type=str)
+        parser.add_argument('country', type=str)
+        parser.add_argument('city', type=str)
         parser.add_argument('date', type=str)
         parser.add_argument('price', type=float)
         parser.add_argument('total_available_tickets', type=int)
-        parser.add_argument('place', type=str,
-                            action="append")  # action = "append" is needed to determine that is a list of strings
-        parser.add_argument('artist', type=str,
+        parser.add_argument('artist', type=str, # CAUTION!
                             action="append")  # action = "append" is needed to determine that is a list of strings
 
         data = parser.parse_args()
@@ -109,18 +112,24 @@ class ShowArtist(Resource):
 
     @auth.login_required(role='admin')
     def post(self, id_show, id_artist=None):
-        # data = Artist.getData(self)
+        data = Artist.getData(self)
         show_found = ShowModel.find_by_id(id_show)
         artists_in_show = show_found.artists
         if id_artist is None:
             id_artist = ArtistModel.length() + 1
 
         if ArtistModel.find_by_id(id_artist) is None:
-            # new_artist = ArtistModel(data['name'], data['country'], data['disciplines'])
+            new_artist = ArtistModel(data['name'], data['country'])
             try:
-                # new_artist.save_to_db()
-                # artists_in_show.append(new_artist)
-                # show_found.save_to_db()
+                for discipline in data['disciplines']:
+
+                    newDiscipline = DisciplineModel(discipline)
+                    newDiscipline.artist_id = id_artist
+                    newDiscipline.save_to_db()
+
+                new_artist.save_to_db()
+                artists_in_show.append(new_artist)
+                show_found.save_to_db()
                 return {'message': "Artist with id [{}] created and added correctly to the show.".format(
                     id_artist)}, 200
             except:
