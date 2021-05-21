@@ -1,55 +1,55 @@
 <template>
   <body>
   <div v-if="newEvent" class...>
+    <h2 style="opacity: 0">space</h2>
     <div class="d-flex justify-content-center">
       <div class="card justify-content-md-center" style="width: 32rem">
         <div>
           <h2 class="card-header">
-            <b class="text-center">Add New Event</b>
-            <span class="close" @click="goBackToShows()">x</span>
-            <h5 class="card-subtitle" style="margin-top: 5px">Introduzca todos lo parametros.</h5>
+            <b class="text-center color-title">Add New Event</b>
+            <span class="close" @click="goBackToShows()">&times;</span>
+            <h5 class="card-subtitle" style="margin-top: 5px; color: dimgray">Introduzca todos lo parametros.</h5>
           </h2>
         </div>
         <div class="card-body" style="text-align: justify;">
           <div class="form-label-group">
-            <br>
-            <label for="inputName">Name</label>
+            <label for="inputName" style="color: dimgray">Name</label>
             <input type="text" id="inputName" class="form-control"
                    placeholder="Enter name" required v-model="addShowForm.name">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputPlace">Place</label>
+            <label for="inputPlace" style="color: dimgray">Place</label>
             <input type="text" id="inputPlace" class="form-control"
                    placeholder="Enter place" required autofocus v-model="addShowForm.place">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputCountry">Country</label>
+            <label for="inputCountry" style="color: dimgray">Country</label>
             <input type="text" id="inputCountry" class="form-control"
                    placeholder="Enter country" required v-model="addShowForm.country">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputCity">City</label>
+            <label for="inputCity" style="color: dimgray">City</label>
             <input type="text" id="inputCity" class="form-control"
                    placeholder="Enter city" required v-model="addShowForm.city">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputDate">Date</label>
+            <label for="inputDate" style="color: dimgray">Date</label>
             <input type="date" id="inputDate" class="form-control"
                    placeholder="Enter date" required v-model="addShowForm.date">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputPrice">Price</label>
+            <label for="inputPrice" style="color: dimgray">Price</label>
             <input type="number" id="inputPrice" class="form-control"
                    placeholder="Enter price (€)" required v-model="addShowForm.price">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputTickets">Total available tickets</label>
+            <label for="inputTickets" style="color: dimgray">Total available tickets</label>
             <input type="number" id="inputTickets" class="form-control"
                    placeholder="Enter number of total tickets available" required v-model="addShowForm.total_available_tickets">
           </div>
@@ -66,52 +66,58 @@
   <div v-else class...>
     <div class="d-flex justify-content-center">
       <div class="card justify-content-md-center" style="width: 32rem">
-        <h2 class="card-header text-center"><b>Update Event</b><span class="close" @click="goBackToShows()">x</span></h2>
+        <div>
+          <h2 class="card-header">
+            <b class="text-center color-title">Update Event</b>
+            <span class="close" @click="goBackToShows()">&times;</span>
+            <h5 class="card-subtitle" style="margin-top: 5px; color: dimgray">Introduzca todos lo parámetros.</h5>
+          </h2>
+        </div>
         <div class="card-body" style="text-align: justify;">
           <div class="form-label-group">
-            <label for="inputId">Id</label>
+            <label for="inputId" style="color: dimgray">Id</label>
             <input type="number" id="inputId" class="form-control"
                    placeholder="Enter id" required autofocus v-model="editShowForm.id">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputName">Name</label>
+            <label for="inputName" style="color: dimgray">Name</label>
             <input type="text" id="inputNameEdit" class="form-control"
                    placeholder="Enter name" required v-model="editShowForm.name">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputPlace">Place</label>
+            <label for="inputPlace" style="color: dimgray">Place</label>
             <input type="text" id="inputPlaceEdit" class="form-control"
                    placeholder="Enter place" required autofocus v-model="editShowForm.place">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputCountry">Country</label>
+            <label for="inputCountry" style="color: dimgray">Country</label>
             <input type="text" id="inputCountryEdit" class="form-control"
                    placeholder="Enter country" required v-model="editShowForm.country">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputCity">City</label>
+            <label for="inputCity" style="color: dimgray">City</label>
             <input type="text" id="inputCityEdit" class="form-control"
                    placeholder="Enter city" required v-model="editShowForm.city">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputDate">Date</label>
+            <label for="inputDate" style="color: dimgray">Date</label>
             <input type="date" id="inputDateEdit" class="form-control"
                    placeholder="Enter date" required v-model="editShowForm.date">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputPrice">Price</label>
+            <label for="inputPrice" style="color: dimgray">Price</label>
             <input type="number" id="inputPriceEdit" class="form-control"
                    placeholder="Enter price (€)" required v-model="editShowForm.price">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputTickets">Total available tickets</label>
+            <label for="inputTickets" style="color: dimgray">Total available tickets</label>
             <input type="number" id="inputTicketsEdit" class="form-control"
                    placeholder="Enter number of total tickets available" required v-model="editShowForm.total_available_tickets">
           </div>
@@ -212,7 +218,7 @@ export default {
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
-        console.log(res.data)
+        console.log('Event created successfully with status ' + res.statusText)
         this.eventCreatedAlert()
         this.goBackToShows()
       })
@@ -303,11 +309,19 @@ body  {
   background: rgb(255,0,156);
   background: linear-gradient(90deg, rgba(255,0,156,1) 0%, rgba(255,63,0,1) 35%, rgba(255,196,120,1) 100%);
   background-color: black;
-  height: 920px;
+  height: 960px;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
+}
+.color-title {
+  background: linear-gradient(90deg, rgba(255,0,156,1) 0%, rgba(255,63,0,1) 35%, rgba(255,196,120,1) 100%);
+  color: #0000;
+  -webkit-background-clip: text;
+  font-size: 50px;
+  font-weight: bold;
+  display: inline-block;
 }
 /* Orange */
 .buttonReset {

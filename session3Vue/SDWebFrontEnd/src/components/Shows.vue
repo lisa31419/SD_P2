@@ -2,7 +2,7 @@
   <div id="app">
     <body style="background-color:black;">
     <!-- Displaying in case button go to Cart True-->
-    <div v-if="isShowingCart" class... class="background">
+    <div v-if="isShowingCart" class="background">
       <!-- Show nothing id cart is empty-->
       <div v-if="shows_added.length > 0">
         <h1 style="opacity: 0">space</h1>
@@ -11,13 +11,15 @@
           <div class="card justify-content-md-center" style="width: 70rem">
           <div class="row justify-content-md-center">
             <div class="col-sm-10 justify-content-md-center">
-              <h1 class="card-header text-center" style="justify-content: center;background: white"><b>Cart</b></h1>
+              <h1 class="card-header text-center color-title-cart" style="justify-content: center">
+                <b>C A R T</b>
+              </h1>
               <table class="table table-hover">
                 <thead>
                 <tr>
                   <th scope="col" style="text-align: center">Event Name</th>
-                  <th scope="col" style="text-align: center">Quantity</th>
-                  <th scope="col" style="text-align: center">Total Tickets</th>
+                  <th scope="col" style="text-align: center">Ticket's Quantity</th>
+                  <th scope="col" style="text-align: center">Price per Ticket</th>
                   <th scope="col" style="text-align: center">Total Price</th>
                   <th scope="col" style="text-align: center"></th>
                   <th></th>
@@ -51,12 +53,12 @@
         </div>
       </div>
       <!-- Show the cart if it is not empty-->
-      <div v-else class... class="background">
+      <div v-else class="background">
         <div class="container" style="width: max-content; height: 600px">
           <h1 style="opacity: 0">space</h1>
           <h1 style="opacity: 0">space</h1>
           <h1 style="opacity: 0">space</h1>
-          <h1 class="text-center text-white" style="align-content: center"><b>Cart</b></h1>
+          <h1 class="text-center text-white" style="align-content: center; font-size: 50px;font-weight: bold"><b>C A R T</b></h1>
           <h4 class="text-center text-white"> Your cart is currently empty.</h4>
           <br>
           <div style="text-align: center;">
@@ -69,7 +71,7 @@
     <!-- Show the shows when button is deactivated-->
     <div v-else class...>
       <img alt="Card image cap" class="card-img-top" src="static/concert.png">
-      <button :disabled="is_admin.toString() === '1'" id="gradCart" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="goToCart()"><b>View Cart</b></button>
+      <button :disabled="is_admin.toString() === '1' || this.logged === undefined" id="gradCart" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="goToCart()"><b>View Cart</b></button>
       <button id="gradInfo" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="displayInfo()"><b>Your information</b></button>
       <button href="#" v-if="this.logged" id="gradLogOut" style="float:left" class='btn buttonWidth text-white' @click="logOut()"><b>Log Out</b></button>
       <button href="#" v-else-if="!this.logged" id="gradLogIn" style="float:left" class='btn buttonWidth text-white' @click="goToLogIn()"><b>Log In</b></button>
@@ -199,6 +201,9 @@ export default {
     },
     goToShows () {
       this.isShowingCart = false
+      for (let i = 0; i < this.shows_added.length; i++) {
+        this.money_available += this.shows_added[i].show.price * this.shows_added[i].quantity
+      }
     },
     goToLogIn () {
       this.logged = false
@@ -274,12 +279,16 @@ export default {
       if (this.money_available >= tickets['show'].price) {
         tickets['quantity'] += 1
         this.money_available -= tickets['show'].price
+        let indice = this.just_shows.indexOf(tickets.show)
+        this.shows_added[indice].show.total_available_tickets -= 1
       }
     },
     returnTickets (tickets) {
       if (tickets['quantity'] > 0) {
         tickets['quantity'] -= 1
         this.money_available += tickets['show'].price
+        let indice = this.just_shows.indexOf(tickets.show)
+        this.shows_added[indice].show.total_available_tickets += 1
       }
     },
     addEventToCart (show) {
@@ -289,11 +298,9 @@ export default {
       }
     },
     deleteEventFromCart (show) {
-      let indice = this.just_shows.indexOf(show)
-      // let showTemp = this.shows_added[indice]
-      if (show['queantity'] > 0) {
-        this.money_available += show['show'].price
-      }
+      let indice = this.just_shows.indexOf(show.show)
+      this.money_available += this.shows_added[indice].show.price * this.shows_added[indice].quantity
+      this.shows_added[indice].show.total_available_tickets += this.shows_added[indice].quantity
       this.just_shows.splice(indice, 1)
       this.shows_added.splice(indice, 1)
     },
@@ -320,9 +327,7 @@ export default {
           tickets_bought: this.shows_added[i].quantity
         }
         listTemp.push(parameters)
-        // this.shows_added[i].tickets_available -= this.shows_added[i].quantity
       }
-      console.log(listTemp)
       this.addPurchase({orders: listTemp})
     },
     getShows () {
@@ -332,6 +337,7 @@ export default {
           this.shows = res.data.shows
           this.showsLength = this.shows.length
           this.getArtistsInShows()
+          // this.getPlacesInShows()
         })
         .catch((error) => {
           console.error(error)
@@ -350,6 +356,22 @@ export default {
           .catch((error) => {
             if (error.response.status === 404) {
               console.log('There are no artists in the show with ID ' + this.shows[i].id)
+            } else {
+              console.error(error)
+            }
+          })
+      }
+    },
+    getPlacesInShows () {
+      for (let i = 0; i < this.showsLength; i++) {
+        const path = `http://localhost:5000/place/${this.shows[i].id}/artists`
+        axios.get(path)
+          .then((res) => {
+            this.places.push(res.data)
+          })
+          .catch((error) => {
+            if (error.response.status === 404) {
+              console.log('There are no places in the show with ID ' + this.shows[i].id)
             } else {
               console.error(error)
             }
@@ -439,8 +461,22 @@ export default {
   background-color: #04128B; /* For browsers that do not support gradients */
   background-image: linear-gradient(#04128B, #040E61);
 }
+.color-title-cart {
+  background: linear-gradient(90deg, rgba(255,156,111,1) 0%, rgba(255,85,162,1) 50%, rgba(0,94,255,1) 100%);
+  color: #0000;
+  -webkit-background-clip: text;
+  font-size: 50px;
+  font-weight: bold;
+}
+
 .background {
   background-image: linear-gradient(180deg, #ff9c6f 0, #ff9277 6.25%, #ff887e 12.5%, #ff7c87 18.75%, #ff708f 25%, #ff6398 31.25%, #ff55a2 37.5%, #ff48ab 43.75%, #f23cb5 50%, #df34bf 56.25%, #c833cb 62.5%, #ad38d6 68.75%, #8c40e1 75%, #5e48ec 81.25%, #0051f4 87.5%, #0058fb 93.75%, #005eff 100%);
+  height: 580px;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
 }
 /* Orange */
 #gradBack {

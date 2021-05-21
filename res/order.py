@@ -21,30 +21,28 @@ class Orders(Resource):
         tickets_bought = data['tickets_bought']
         user = AccountsModel.find_by_username(username)
         if user.username is g.user.username:
-                show = ShowModel.find_by_id(id_show)
-                shows_price = show.price
-                available_tickets = show.total_available_tickets
-                users_money = user.available_money
+            show = ShowModel.find_by_id(id_show)
+            shows_price = show.price
+            available_tickets = show.total_available_tickets
+            users_money = user.available_money
 
-                if shows_price < users_money and available_tickets > 0:
-                    try:
-                        show.total_available_tickets = available_tickets - 1
-                        users_money -= (shows_price * tickets_bought)
-                        user.available_money = users_money
-                        new_order = OrdersModel(id_show, tickets_bought)
-                        user.orders.append(new_order)
-                        # es posible que falte un db.session.add(self) cambiando self por algo
-                        db.session.add(new_order)
-                        db.session.commit()
-                        return {'order': new_order.json()}
-                    except:
-                        db.session.rollback()
-                        return {"message": "An error occurred inserting the order."}, 500
-                else:
-                    return {"message": "You don't have enough money or there aren't tickets left."}, 400
+            if shows_price < users_money and available_tickets > 0:
+                try:
+                    show.total_available_tickets = available_tickets - 1
+                    users_money -= (shows_price * tickets_bought)
+                    user.available_money = users_money
+                    new_order = OrdersModel(id_show, tickets_bought)
+                    user.orders.append(new_order)
+                    db.session.add(new_order)
+                    db.session.commit()
+                    return {'order': new_order.json()}
+                except:
+                    db.session.rollback()
+                    return {"message": "An error occurred inserting the order."}, 500
+            else:
+                return {"message": "You don't have enough money or there aren't tickets left."}, 400
         else:
             return {'message': "User error in username."}, 400
-
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
@@ -60,15 +58,6 @@ class Orders(Resource):
 class OrdersList(Resource):
     def get(self):
         return [x.json() for x in OrdersModel.get_all()]
-
-    def getData(self):
-        parser = reqparse.RequestParser()  # create parameters parser from request
-
-        # define all input parameters need and its type
-        parser.add_argument('orders', action='append', type=dict)
-
-        data = parser.parse_args()
-        return data
 
     @auth.login_required(role='user')
     def post(self, username):
@@ -109,3 +98,12 @@ class OrdersList(Resource):
                 return {"message": "An error occurred committing the order."}, 500
         else:
             return {'message': "User error in username."}, 400
+
+    def getData(self):
+        parser = reqparse.RequestParser()  # create parameters parser from request
+
+        # define all input parameters need and its type
+        parser.add_argument('orders', action='append', type=dict)
+
+        data = parser.parse_args()
+        return data

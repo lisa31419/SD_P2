@@ -31,8 +31,7 @@ class ArtistModel(db.Model):
         self.country = country
 
     def json(self):
-        return {'id': self.id, 'name': self.name, 'country': self.country}#,
-                #'disciplines': [discipline.json() for discipline in self.disciplines]}
+        return {'id': self.id, 'name': self.name, 'country': self.country}
 
     def save_to_db(self):
         db.session.add(self)

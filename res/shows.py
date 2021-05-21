@@ -5,7 +5,6 @@ from flask_restful import reqparse, Resource
 from models.artist import *
 from models.show import ShowModel
 from res.artists import Artist
-from res.places import Place
 from models.accounts import *
 from res.db import db
 
@@ -25,6 +24,8 @@ class Show(Resource):
         place_id = response_place.json()['id']
         if id is None:
             id = ShowModel.length() + 1
+            while self.get(id) != 404:
+                id += 1
 
         if self.get(id) == 404:
             new_show = ShowModel(data['name'], data['date'], data['price'], data['total_available_tickets'])
@@ -36,7 +37,8 @@ class Show(Resource):
                 return {"message": "An error occurred inserting the show."}, 500
 
         else:
-            return {'message': "Show with id [{}] already exists".format(id)}
+            self.put(id)
+            return id, 200
 
     @auth.login_required(role='admin')
     def delete(self, id):

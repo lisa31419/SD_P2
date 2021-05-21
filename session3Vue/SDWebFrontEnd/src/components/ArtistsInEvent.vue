@@ -3,39 +3,45 @@
   <div v-if="addArtist" class...>
     <div class="d-flex justify-content-center">
       <div class="card justify-content-md-center" style="width: 32rem">
-        <h2 class="card-header text-center"><b>Add Artist to Event</b><span class="close" @click="goBackToShows()">x</span></h2>
+        <div>
+          <h2 class="card-header">
+            <b class="text-center color-title">Add Artist to Event</b>
+            <span class="close" @click="goBackToShows()">&times;</span>
+            <h5 class="card-subtitle" style="margin-top: 5px; color: dimgray">Introduzca todos lo parámetros.</h5>
+          </h2>
+        </div>
         <div class="card-body" style="text-align: justify;">
           <div class="form-label-group">
-            <label for="inputName">Artist's Name</label>
+            <label for="inputName" style="color: dimgray">Artist's Name</label>
             <input type="text" id="inputName" class="form-control"
                    placeholder="Enter artist's name" required v-model="addArtistForm.name">
           </div>
           <div class="form-label-group">
             <br>
-            <label for="inputCountry">Artist's Country</label>
+            <label for="inputCountry" style="color: dimgray">Artist's Country</label>
             <input type="text" id="inputCountry" class="form-control"
                    placeholder="Enter artist's country" required v-model="addArtistForm.country">
           </div>
           <div class="form-label-group">
             <br>
-            <label>Artist's Genre</label>
-            <label class="container">Theatre
+            <label style="color: dimgrey">Artist's Genre</label>
+            <label class="container" style="color: dimgray">Theatre
               <input type="checkbox" id="THEATRE" @click="addDisciplines('THEATRE')">
-              <span class="checkmark"></span>
+              <span class="checkmark" ></span>
             </label>
-            <label class="container">Music
+            <label class="container" style="color: dimgray">Music
               <input type="checkbox" id="MUSIC" @click="addDisciplines('MUSIC')">
               <span class="checkmark"></span>
             </label>
-            <label class="container">Dance
+            <label class="container" style="color: dimgray">Dance
               <input type="checkbox" id="DANCE" @click="addDisciplines('DANCE')">
               <span class="checkmark"></span>
             </label>
-            <label class="container">Circus
+            <label class="container" style="color: dimgray">Circus
               <input type="checkbox" id="CIRCUS" @click="addDisciplines('CIRCUS')">
               <span class="checkmark"></span>
             </label>
-            <label class="container">Other
+            <label class="container" style="color: dimgray">Other
               <input type="checkbox" id="OTHER" @click="addDisciplines('OTHER')">
               <span class="checkmark"></span>
             </label>
@@ -54,8 +60,14 @@
     <h2 style="opacity: 0">space</h2>
     <h2 style="opacity: 0">space</h2>
     <div class="d-flex justify-content-center">
-      <div class="card justify-content-md-center" style="width: 32rem">
-        <h2 class="card-header text-center"><b>Delete Artist from Event</b><span class="close" @click="goBackToShows()">x</span></h2>
+      <div class="card justify-content-md-center" style="width: 40rem">
+        <div>
+          <h2 class="card-header">
+            <b class="text-center color-title">Delete Artist from Event</b>
+            <span class="close" @click="goBackToShows()">&times;</span>
+            <h5 class="card-subtitle" style="margin-top: 5px; color: dimgray">Introduzca todos lo parámetros.</h5>
+          </h2>
+        </div>
         <div class="card-body" style="text-align: justify;">
           <div class="form-label-group">
             <label for="inputId">Artist's ID</label>
@@ -266,9 +278,10 @@ export default {
 
 <style scoped>
 body  {
-  background-image: url('../../static/cool-background.png');
+  background: rgb(255,0,87);
+  background: linear-gradient(90deg, rgba(255,0,87,1) 0%, rgba(234,0,255,1) 50%, rgba(66,0,251,1) 100%);
   background-color: black;
-  height: 580px;
+  height: 640px;
   background-attachment: fixed;
   background-position: center;
   background-repeat: no-repeat;
@@ -306,6 +319,7 @@ body  {
   margin-bottom: 12px;
   cursor: pointer;
   font-size: 16px;
+  border-radius: 15%;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -316,6 +330,7 @@ body  {
 .container input {
   position: absolute;
   opacity: 0;
+  border-radius: 15%;
   cursor: pointer;
   height: 0;
   width: 0;
@@ -326,6 +341,7 @@ body  {
   position: absolute;
   top: 0;
   left: 0;
+  border-radius: 15%;
   height: 25px;
   width: 25px;
   background-color: #eee;
@@ -345,6 +361,7 @@ body  {
 .checkmark:after {
   content: "";
   position: absolute;
+  border-radius: 15%;
   display: none;
 }
 
@@ -364,5 +381,13 @@ body  {
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+.color-title {
+  background: rgb(255,0,87);
+  background: linear-gradient(90deg, rgba(255,0,87,1) 0%, rgba(234,0,255,1) 50%, rgba(66,0,251,1) 100%);  color: #0000;
+  -webkit-background-clip: text;
+  font-size: 50px;
+  font-weight: bold;
+  display: inline-block;
 }
 </style>
