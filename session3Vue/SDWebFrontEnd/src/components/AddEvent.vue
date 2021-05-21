@@ -230,7 +230,6 @@ export default {
     },
     updateShow (parameters) {
       const path = `http://localhost:5000/show/${this.editShowForm.id}`
-      console.log(this.editShowForm.date)
       axios.put(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {

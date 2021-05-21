@@ -69,15 +69,15 @@
     <!-- Show the shows when button is deactivated-->
     <div v-else class...>
       <img alt="Card image cap" class="card-img-top" src="static/concert.png">
-      <button id="gradCart" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="goToCart()"><b>View Cart</b></button>
+      <button :disabled="is_admin.toString() === '1'" id="gradCart" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="goToCart()"><b>View Cart</b></button>
       <button id="gradInfo" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="displayInfo()"><b>Your information</b></button>
       <button href="#" v-if="this.logged" id="gradLogOut" style="float:left" class='btn buttonWidth text-white' @click="logOut()"><b>Log Out</b></button>
       <button href="#" v-else-if="!this.logged" id="gradLogIn" style="float:left" class='btn buttonWidth text-white' @click="goToLogIn()"><b>Log In</b></button>
       <hr><hr><hr>
       <!--v-if="this.is_admin"-->
       <div class="flex-parent justify-content: center" style="text-align: center">
-        <button href="#" style="margin-right: 25px;" class="buttonEvents buttonWidth25 btn-lg" @click="addNewEvent()"><b>Add New Event</b></button>
-        <button href="#" class="buttonEvents buttonWidth25 btn-lg" @click="updateEvent()"><b>Update Event</b></button>
+        <button v-if="is_admin.toString() === '1'" href="#" style="margin-right: 25px;" class="buttonEvents buttonWidth25 btn-lg" @click="addNewEvent()"><b>Add New Event</b></button>
+        <button v-if="is_admin.toString() === '1'" href="#" class="buttonEvents buttonWidth25 btn-lg" @click="updateEvent()"><b>Update Event</b></button>
       </div>
       <hr><hr>
       <div class="container">
@@ -88,7 +88,8 @@
               <h4 class="card-header text-center text-white"><b>{{ show.name }}</b></h4>
               <div class="card-body" style="background-color: whitesmoke;">
                 <div v-for="(artist) in artistas[shows.indexOf(show)]" :key="artist.id">
-                  <h6>{{artist.name}}</h6>
+                  <h5 v-if="is_admin.toString() === '0'">{{artist.name}}</h5>
+                  <h5 v-else-if="is_admin.toString() === '1'">{{artist.name + " ID: " + artist.id}}</h5>
                 </div>
                 <h6>{{ show.city }}</h6>
                 <h6>{{ show.place }}</h6>
@@ -99,13 +100,13 @@
             <div class="card text-white mb-3 text-center" style="background-color: #2F0E68; max-width: 18rem;">
               <div class="card-body">
                 <h4> {{ show.total_available_tickets }} tickets available </h4>
-                <h5 style="color: #ff9c6f "> Show con ID <b>{{shows[shows.indexOf(show)].id}}</b></h5>
-                <button :disabled="just_shows.includes(show)" class="buttonAddToCart buttonsCardWidth btn-lg"
+                <h5 v-if="is_admin.toString() === '1'" style="color: #ff9c6f "> Show con ID <b>{{shows[shows.indexOf(show)].id}}</b></h5>
+                <button v-if="is_admin.toString() === '0'" :disabled="just_shows.includes(show)" class="buttonAddToCart buttonsCardWidth btn-lg"
                           @click="addEventToCart(show)"> Add show to cart
                 </button>
-                <button href="#" class="buttonEvents buttonsCardWidth btn-lg"  style="margin-top: 15px; margin-bottom: 10px" @click="addArtistToEvent(show)">Add Artist to Event</button>
-                <button href="#" class="buttonEvents buttonsCardWidth btn-lg" style="margin-bottom: 15px" @click="deleteArtistFromEvent(show)">Delete Artist from Event</button>
-                <button href="#" class="buttonDeleteEvent buttonsCardWidth btn-lg" @click="deleteEvent(show.id)">Delete Event</button>
+                <button v-if="is_admin.toString() === '1'" href="#" class="buttonEvents buttonsCardWidth btn-lg"  style="margin-top: 15px; margin-bottom: 10px" @click="addArtistToEvent(show)">Add Artist to Event</button>
+                <button v-if="is_admin.toString() === '1'" href="#" class="buttonEvents buttonsCardWidth btn-lg" style="margin-bottom: 10px" @click="deleteArtistFromEvent(show)">Delete Artist from Event</button>
+                <button v-if="is_admin.toString() === '1'" href="#" class="buttonDeleteEvent buttonsCardWidth btn-lg" @click="deleteEvent(show.id)">Delete Event</button>
               </div>
             </div>
           </div>
@@ -185,6 +186,7 @@ export default {
       artistas: [],
       show_to_modify: '',
       index: 0,
+      is_admin: 0,
       showsLength: 0,
       isShowingCart: false,
       newEvent: true,
@@ -204,12 +206,22 @@ export default {
     },
     displayInfo () {
       // Use sweetalert2
-      this.$swal('Your current information', 'You have ' + this.shows_added.length + ' tickets in Cart and your current available money is ' + this.money_available + '€.', 'info')
+      if (this.is_admin.toString() === '1') {
+        this.$swal('Your current information', 'You are in Administrator mode. This means you will not interact with the Cart, just the shows. Have fun!! ', 'info')
+      } else if (this.is_admin.toString() === '0' && this.logged === undefined) {
+        this.$swal('Your current information', 'You are not logged in. This means you can not interact with the Cart, nor the Shows. Create an account if you haven´t done it yet!! ', 'warning')
+      } else {
+        this.$swal('Your current information', 'You have ' + this.shows_added.length + ' tickets in Cart and your current available money is ' + this.money_available + '€.', 'info')
+      }
+    },
+    errorInShowAlert () {
+      // Use sweetalert2
+      this.$swal('Error', 'Something went wrong while deleting the show.', 'error')
     },
     logOut () {
       this.logged = false
       this.$router.push({ path: '/' })
-      window.location.reload()
+      location.reload()
     },
     addNewEvent () {
       this.newEvent = true
@@ -233,7 +245,15 @@ export default {
       const path = `http://localhost:5000/show/${show}`
       axios.delete(path, {
         auth: {username: this.token}
+      }).then((res) => {
+        console.log('Show deleted correctly with status code ' + res.statusText)
+        location.reload()
       })
+        .catch((error) => {
+          console.error(error)
+          this.errorInShowAlert()
+          this.initFormArtists()
+        })
     },
     getMoneyFromUser () {
       const path = `http://localhost:5000/account/${this.username}`
@@ -326,24 +346,28 @@ export default {
         axios.get(path)
           .then((res) => {
             this.artistas.push(res.data.artists)
-            // this.shows.shift()
-            // this.shows.push(show)
           })
           .catch((error) => {
-            console.error(error)
+            if (error.response.status === 404) {
+              console.log('There are no artists in the show with ID ' + this.shows[i].id)
+            } else {
+              console.error(error)
+            }
           })
       }
-      console.log(this.shows)
     }
   },
   created () {
     this.getShows()
     this.username = this.$route.query.username
     this.logged = this.$route.query.logged
-    this.is_admin = this.$route.query.is_admin
+    if (this.$route.query.is_admin === undefined) {
+      this.is_admin = 0
+    } else {
+      this.is_admin = this.$route.query.is_admin
+    }
     this.token = this.$route.query.token
     this.getMoneyFromUser()
-    // this.getArtistsInShows()
   }
 }
 </script>

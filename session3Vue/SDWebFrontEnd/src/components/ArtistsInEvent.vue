@@ -50,6 +50,34 @@
       </div>
     </div>
   </div>
+  <div v-else>
+    <h2 style="opacity: 0">space</h2>
+    <h2 style="opacity: 0">space</h2>
+    <div class="d-flex justify-content-center">
+      <div class="card justify-content-md-center" style="width: 32rem">
+        <h2 class="card-header text-center"><b>Delete Artist from Event</b><span class="close" @click="goBackToShows()">x</span></h2>
+        <div class="card-body" style="text-align: justify;">
+          <div class="form-label-group">
+            <label for="inputId">Artist's ID</label>
+            <input type="number" id="inputId" class="form-control"
+                   placeholder="Enter artist's ID" required v-model="deleteArtistForm.id">
+          </div>
+          <div class="form-label-group">
+            <br>
+            <label for="inputName">Artist's Name</label>
+            <input type="text" id="inputNameDelete" class="form-control"
+                   placeholder="Enter artist's name" required v-model="deleteArtistForm.name">
+          </div>
+          <br>
+          <div class="d-flex justify-content-center" >
+            <button class="btn buttonSubmit btn-lg text-white" type="submit" @click="onSubmitDeleteArtistInShow ">Submit</button>
+            <hr>
+            <button class="btn buttonReset btn-lg text-white" type="reset" @click="onResetDeleteArtistInEvent">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   </body>
 </template>
 
@@ -71,6 +99,10 @@ export default {
         name: '',
         country: '',
         disciplines: []
+      },
+      deleteArtistForm: {
+        id: '',
+        name: ''
       }
     }
   },
@@ -83,6 +115,10 @@ export default {
       this.addArtistForm.name = ''
       this.addArtistForm.country = ''
       this.addArtistForm.disciplines = []
+    },
+    initFormDeleteArtists () {
+      this.deleteArtistForm.id = ''
+      this.deleteArtistForm.name = ''
     },
     addDisciplines (disciplina) {
       let checkbox = document.getElementById(disciplina)
@@ -114,20 +150,17 @@ export default {
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
-        console.log(res.data)
         this.addArtistForm.id = res.data
-        console.log(this.addArtistForm.id)
         const params = {
           id: this.addArtistForm.id,
           name: this.addArtistForm.name,
           country: this.addArtistForm.country,
           disciplines: this.addArtistForm.disciplines
         }
-        console.log(params)
         this.addArtistInShow(params)
       })
         .catch((error) => {
-          this.addArtistForm.id = error.data
+          this.addArtistForm.id = error.response.data
           const params = {
             id: this.addArtistForm.id,
             name: this.addArtistForm.name,
@@ -135,7 +168,6 @@ export default {
             disciplines: this.addArtistForm.disciplines
           }
           this.addArtistInShow(params)
-          console.error(error)
         })
     },
     addArtistInShow (parameters) {
@@ -143,7 +175,7 @@ export default {
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
-        console.log(res.data)
+        console.log('Artists added correctly with status code ' + res.statusText)
         this.artistAddedAlert()
         this.initFormArtists()
         this.goBackToShows()
@@ -159,6 +191,35 @@ export default {
       // Reset our form values
       this.initFormArtists()
     },
+    onSubmitDeleteArtistInShow (evt) {
+      evt.preventDefault()
+      const parameters = {
+        id: this.deleteArtistForm.id,
+        name: this.deleteArtistForm.name
+      }
+      this.deleteArtistInShow(parameters)
+    },
+    deleteArtistInShow (parameters) {
+      const path = `http://localhost:5000/show/${this.show_to_modify.id}/artist/${this.deleteArtistForm.id}`
+      axios.delete(path, parameters, {
+        auth: {username: this.token}
+      }).then((res) => {
+        console.log('Artists deleted correctly with status code ' + res.statusText)
+        this.artistDeletedAlert()
+        this.initFormDeleteArtists()
+        this.goBackToShows()
+      })
+        .catch((error) => {
+          console.error(error)
+          this.errorInArtistAlert()
+          this.initFormArtists()
+        })
+    },
+    onResetDeleteArtistInEvent (evt) {
+      evt.preventDefault()
+      // Reset our form values
+      this.initFormDeleteArtists()
+    },
     errorInArtistAlert () {
       // Use sweetalert2
       this.$swal('Error', 'Something went wrong with the Artist, check your params.', 'error')
@@ -166,6 +227,10 @@ export default {
     artistAddedAlert () {
       // Use sweetalert2
       this.$swal('Success', 'Artist added successfully.', 'success')
+    },
+    artistDeletedAlert () {
+      // Use sweetalert2
+      this.$swal('Success', 'Artist deleted successfully.', 'success')
     }
   },
   created () {
