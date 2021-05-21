@@ -90,8 +90,12 @@
               <h4 class="card-header text-center text-white"><b>{{ show.name }}</b></h4>
               <div class="card-body" style="background-color: whitesmoke;">
                 <div v-for="(artist) in artistas[shows.indexOf(show)]" :key="artist.id">
-                  <h5 v-if="is_admin.toString() === '0'">{{artist.name}}</h5>
-                  <h5 v-else-if="is_admin.toString() === '1'">{{artist.name + " ID: " + artist.id}}</h5>
+                  <h4 v-if="is_admin.toString() === '0'">{{artist.name}}</h4>
+                  <h4 v-else-if="is_admin.toString() === '1'">{{artist.name + " ID: " + artist.id}}</h4>
+                </div>
+                <div v-for="(place) in places[shows.indexOf(show)]" :key="place.id">
+                  <h5>{{place.name}}</h5>
+                  <h5>{{place.city + ','}} {{place.country}}</h5>
                 </div>
                 <h6>{{ show.city }}</h6>
                 <h6>{{ show.place }}</h6>
@@ -145,7 +149,7 @@ export default {
             }
           ],
           city: 'Barcelona',
-          place: 'Parc del Forum',
+          place_id: 0,
           date: '2020-07-03',
           price: 100,
           total_available_tickets: 100
@@ -164,7 +168,7 @@ export default {
             }
           ],
           city: 'Barcelona',
-          place: 'Parc del Forum',
+          place_id: 0,
           date: '2020-07-05',
           price: 24,
           total_available_tickets: 100
@@ -177,7 +181,7 @@ export default {
             }
           ],
           city: 'Barcelona',
-          place: 'Sant Jordi',
+          place_id: 0,
           date: '2020-08-22',
           price: 70,
           total_available_tickets: 100
@@ -186,6 +190,7 @@ export default {
       shows_added: [],
       just_shows: [],
       artistas: [],
+      places: [],
       show_to_modify: '',
       index: 0,
       is_admin: 0,
@@ -337,7 +342,7 @@ export default {
           this.shows = res.data.shows
           this.showsLength = this.shows.length
           this.getArtistsInShows()
-          // this.getPlacesInShows()
+          this.getPlacesInShows()
         })
         .catch((error) => {
           console.error(error)
@@ -364,10 +369,11 @@ export default {
     },
     getPlacesInShows () {
       for (let i = 0; i < this.showsLength; i++) {
-        const path = `http://localhost:5000/place/${this.shows[i].id}/artists`
+        const path = `http://localhost:5000/place/${this.shows[i].place_id}`
+        console.log(this.shows[i])
         axios.get(path)
           .then((res) => {
-            this.places.push(res.data)
+            this.places.push([res.data.place])
           })
           .catch((error) => {
             if (error.response.status === 404) {
