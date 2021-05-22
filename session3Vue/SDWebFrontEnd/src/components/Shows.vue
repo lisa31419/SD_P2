@@ -252,7 +252,7 @@ export default {
       this.$router.replace({ path: '/artistsInEvent', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token, addArtist: this.addArtist, show_to_modify: this.show_to_modify } })
     },
     deleteEvent (show) {
-      const path = `http://localhost:5000/show/${show}`
+      const path = `https://git.heroku.com/a3-ticketmonster.git/show/${show}`
       axios.delete(path, {
         auth: {username: this.token}
       }).then((res) => {
@@ -266,7 +266,7 @@ export default {
         })
     },
     getMoneyFromUser () {
-      const path = `http://localhost:5000/account/${this.username}`
+      const path = `https://git.heroku.com/a3-ticketmonster.git/account/${this.username}`
       axios.get(path)
         .then((res) => {
           if (res.data.toString() === '404') {
@@ -310,7 +310,7 @@ export default {
       this.shows_added.splice(indice, 1)
     },
     addPurchase (parameters) {
-      const path = `http://localhost:5000/orders/${this.username}`
+      const path = `https://git.heroku.com/a3-ticketmonster.git/orders/${this.username}`
       axios.post(path, parameters, {
         auth: {username: this.token}
       })
@@ -336,7 +336,7 @@ export default {
       this.addPurchase({orders: listTemp})
     },
     getShows () {
-      const path = 'http://localhost:5000/shows'
+      const path = 'https://git.heroku.com/a3-ticketmonster.git/shows'
       axios.get(path)
         .then((res) => {
           this.shows = res.data.shows
@@ -353,7 +353,7 @@ export default {
     },
     getArtistsInShows () {
       for (let i = 0; i < this.showsLength; i++) {
-        const path = `http://localhost:5000/show/${this.shows[i].id}/artists`
+        const path = `https://git.heroku.com/a3-ticketmonster.git/show/${this.shows[i].id}/artists`
         axios.get(path)
           .then((res) => {
             this.artistas.push(res.data.artists)
@@ -369,7 +369,7 @@ export default {
     },
     getPlacesInShows () {
       for (let i = 0; i < this.showsLength; i++) {
-        const path = `http://localhost:5000/place/${this.shows[i].place_id}`
+        const path = `https://git.heroku.com/a3-ticketmonster.git/place/${this.shows[i].place_id}`
         console.log(this.shows[i])
         axios.get(path)
           .then((res) => {
