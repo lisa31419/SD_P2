@@ -1,5 +1,4 @@
 alembic==1.5.8
-aniso8601 @ file:///tmp/build/80754af9/aniso8601_1614708839015/work
 argon2-cffi==20.1.0
 async-generator==1.10
 attrs==20.3.0
@@ -8,16 +7,13 @@ bleach==3.3.0
 certifi==2020.12.5
 cffi==1.14.5
 chardet==4.0.0
-click @ file:///home/linux1/recipes/ci/click_1610990599742/work
 colorama==0.4.4
 decorator==5.0.7
 defusedxml==0.7.1
 entrypoints==0.3
-Flask @ file:///home/ktietz/src/ci/flask_1611932660458/work
 Flask-Cors==3.0.10
 Flask-HTTPAuth==4.3.0
 Flask-Migrate==2.7.0
-Flask-RESTful @ file:///tmp/build/80754af9/flask-restful_1613768889368/work
 Flask-SQLAlchemy==2.5.1
 greenlet==1.0.0
 idna==2.10
@@ -25,9 +21,7 @@ ipykernel==5.5.3
 ipython==7.23.0
 ipython-genutils==0.2.0
 ipywidgets==7.6.3
-itsdangerous @ file:///home/ktietz/src/ci/itsdangerous_1611932585308/work
 jedi==0.18.0
-Jinja2 @ file:///tmp/build/80754af9/jinja2_1612213139570/work
 jsonschema==3.2.0
 jupyter==1.0.0
 jupyter-client==6.1.12
@@ -57,9 +51,7 @@ pycparser==2.20
 Pygments==2.9.0
 pyparsing==2.4.7
 pyrsistent==0.17.3
-python-dateutil @ file:///home/ktietz/src/ci/python-dateutil_1611928101742/work
 python-editor==1.0.4
-pytz @ file:///tmp/build/80754af9/pytz_1612215392582/work
 pywin32==300
 pywinpty==1.0.1
 pyzmq==22.0.3
@@ -67,7 +59,6 @@ qtconsole==5.1.0
 QtPy==1.9.0
 requests==2.25.1
 Send2Trash==1.5.0
-six @ file:///C:/ci/six_1605187374963/work
 SQLAlchemy==1.4.9
 terminado==0.9.4
 testpath==0.4.4
@@ -76,6 +67,5 @@ traitlets==5.0.5
 urllib3==1.26.4
 wcwidth==0.2.5
 webencodings==0.5.1
-Werkzeug @ file:///home/ktietz/src/ci/werkzeug_1611932622770/work
 widgetsnbextension==3.5.1
 wincertstore==0.2
