@@ -1,6 +1,8 @@
 from flask import jsonify
 from flask_restful import reqparse, Resource
 
+from res.account import *
+
 from models.place import PlaceModel
 from models.show import ShowModel
 from res.db import db
@@ -16,20 +18,25 @@ class Place(Resource):
 
     def post(self, id=None):
         data = self.getData()
-
         if id is None:
-            id = PlaceModel.legth() + 1
+            placeTemp = PlaceModel.find_by_name(data['place'])
+            if placeTemp is not None:
+                id = placeTemp.id
+            else:
+                id = PlaceModel.length() + 1
 
         if self.get(id) == 404:
-            new_place = PlaceModel(data['name'], data['city'], data['country'], data['capacity'])
+            new_place = PlaceModel(data['place'], data['city'], data['country'], data['total_available_tickets'])
             try:
                 new_place.save_to_db()
-                return {'message': "Place with id [{}] added correctly".format(id)}
+                print({'message': "Place with id [{}] added correctly".format(id)})
+                return {'id': id}, 200
             except:
                 return {"message": "An error occurred inserting the place."}, 500
 
         else:
-            return {'message': "Place with id [{}] already exists".format(id)}
+            print({'message': "Place with id [{}] already exists".format(id)})
+            return {'id': id}, 200
 
     def delete(self, id):
         if id is None or self.get(id) == 404:
@@ -46,7 +53,7 @@ class Place(Resource):
             return {'message': "Place with id [{}] will be created".format(id)}
         else:
             place_to_update = PlaceModel.find_by_id(id)
-            place_to_update.name = data['name']
+            place_to_update.name = data['place']
             place_to_update.city = data['city']
             place_to_update.country = data['country']
             place_to_update.capacity = data['capacity']
@@ -61,10 +68,10 @@ class Place(Resource):
 
         # define all input parameters need and its type
 
-        parser.add_argument('name', type=str, required=True, help="This field cannot be left blanck")
+        parser.add_argument('place', type=str, required=True, help="This field cannot be left blanck")
         parser.add_argument('city', type=str)
         parser.add_argument('country', type=str)
-        parser.add_argument('capacity', type=int)
+        parser.add_argument('total_available_tickets', type=int)
 
         data = parser.parse_args()
         return data

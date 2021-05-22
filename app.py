@@ -49,6 +49,7 @@ api.add_resource(AccountsList, '/accounts')
 
 api.add_resource(Login, '/login')
 
+
 @app.route('/')
 def render_vue():
     return render_template("index.html")

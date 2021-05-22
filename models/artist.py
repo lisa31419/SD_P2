@@ -8,7 +8,15 @@ class DisciplineModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     discipline = db.Column(db.Enum(*disciplines), nullable=False)
-    artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'), nullable=False)
+    artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'))
+    artist = db.relationship("ArtistModel")
+
+    def __init__(self, discipline):
+        self.discipline = discipline
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class ArtistModel(db.Model):
@@ -17,16 +25,13 @@ class ArtistModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(30), unique=True, nullable=False)
     country = db.Column(db.String(30), nullable=False)
-    disciplines = db.relationship("DisciplineModel", backref='artists')
 
-    def __init__(self, name, country, discipline):
+    def __init__(self, name, country):
         self.name = name
         self.country = country
-        self.discipline = discipline
 
     def json(self):
-        return {'id': self.id, 'name': self.name, 'country': self.country,
-                'disciplines': [discipline.json() for discipline in self.disciplines]}
+        return {'id': self.id, 'name': self.name, 'country': self.country}
 
     def save_to_db(self):
         db.session.add(self)
@@ -41,11 +46,13 @@ class ArtistModel(db.Model):
         return cls.query.get(id)
 
     @classmethod
+    def find_by_name(cls, name):
+        return cls.query.filter(ArtistModel.name == name).first()
+
+    @classmethod
     def get_all(cls):
         return cls.query.all()
 
     @classmethod
     def length(cls):
         return cls.query.count()
-
-

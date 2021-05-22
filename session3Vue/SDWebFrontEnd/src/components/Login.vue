@@ -84,20 +84,24 @@ export default {
         username: this.username,
         password: this.password
       }
-      const path = `http://localhost:5000/login`
-      axios.post(path, parameters)
-        .then((res) => {
-          this.logged = true
-          this.token = res.data.token
-          this.find_match = true
-          this.getAccount()
-          this.accountCreatedAlert()
-        })
-        .catch((error) => {
-          this.errorAlert()
-          console.error(error)
-          this.user = ''
-        })
+      if (!this.required(parameters)) {
+        this.errorInAccountAlert()
+      } else {
+        const path = `http://localhost:5000/login`
+        axios.post(path, parameters)
+          .then((res) => {
+            this.logged = true
+            this.token = res.data.token
+            this.find_match = true
+            this.getAccount()
+            this.accountCreatedAlert()
+          })
+          .catch((error) => {
+            this.errorInAccountAlert()
+            console.error(error)
+            this.user = ''
+          })
+      }
     },
     getAccount () {
       const path = `http://localhost:5000/account/${this.username}`
@@ -108,10 +112,9 @@ export default {
           this.$router.replace({ path: '/', query: { username: this.username, logged: this.logged, is_admin: this.is_admin, token: this.token } })
         })
         .catch((error) => {
-          this.errorAlert()
+          this.errorInAccountAlert()
           console.error(error)
           this.user = ''
-          alert('User')
         })
     },
     /* CLEANING INFO */
@@ -131,25 +134,36 @@ export default {
         username: this.addUserForm.username,
         password: this.addUserForm.password
       }
-      axios.post(path, parameters)
-        .then(() => {
-          this.accountCreatedAlert()
-          this.initForm()
-          console.log('Account done')
-          this.goBackToLogin()
-        })
-        .catch((error) => {
-          this.duplicatedAccountAlert()
-          this.initForm()
-          console.log(error)
-        })
+      if (!this.required(parameters)) {
+        this.errorInAccountAlert()
+      } else {
+        axios.post(path, parameters)
+          .then((res) => {
+            this.accountCreatedAlert()
+            console.log('Account created successfully with status ' + res.statusText)
+            this.goBackToLogin()
+          })
+          .catch((error) => {
+            this.duplicatedAccountAlert()
+            console.log(error)
+          })
+      }
+      this.initForm()
+    },
+    required (params) {
+      for (const elem in params) {
+        if (params[elem.toString()].length === 0) {
+          return false
+        }
+      }
+      return true
     },
     /* ALERTS */
     successAlert () {
       // Use sweetalert2
       this.$swal('Success', 'You are logged in!', 'success')
     },
-    errorAlert () {
+    errorInAccountAlert () {
       // Use sweetalert2
       this.$swal('Error', 'Username or password incorrect.\n Please Change them.', 'error')
     },

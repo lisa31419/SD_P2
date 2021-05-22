@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask_restful import reqparse, Resource
 
-from models.artist import ArtistModel
+from models.artist import ArtistModel, DisciplineModel
 from models.show import ShowModel
 from models.accounts import *
 from res.db import db
@@ -21,18 +21,30 @@ class Artist(Resource):
         data = self.getData()
 
         if id is None:
-            id = ArtistModel.length() + 1
+            artista = ArtistModel.find_by_name(data['name'])
+            if artista is not None:
+                id = artista.id
+                print(id)
+            else:
+                id = ArtistModel.length() + 1
 
         if self.get(id) == 404:
-            new_artist = ArtistModel(data['name'], data['country'], data['disciplines'])
+            print("me he metido donde no debia")
+            new_artist = ArtistModel(data['name'], data['country'])
             try:
+                for discipline in data['disciplines']:
+                    newDiscipline = DisciplineModel(discipline)
+                    newDiscipline.artist_id = id
+                    newDiscipline.save_to_db()
                 new_artist.save_to_db()
+                print({'message': "Artist with id [{}] added".format(id)})
                 return id, 200
             except:
                 return {"message": "An error occurred inserting the artist."}, 500
 
         else:
-            return id, 409
+            self.put(id)
+            return id, 200
 
     @auth.login_required(role='admin')
     def delete(self, id):
@@ -52,10 +64,14 @@ class Artist(Resource):
             artist_to_update = ArtistModel.find_by_id(id)
             artist_to_update.name = data['name']
             artist_to_update.country = data['country']
-            # artist_to_update.disciplines = data['disciplines']
             try:
+                for discipline in data['disciplines']:
+                    newDiscipline = DisciplineModel(discipline)
+                    newDiscipline.artist_id = id
+                    newDiscipline.save_to_db()
                 db.session.commit()
-                return {'message': "Artist with id [{}] updated".format(id)}
+                print("Artist with id [{}] updated".format(id))
+                return {'id': id}, 200
             except:
                 return {'message': "Error while commiting changes"}
 
