@@ -71,7 +71,6 @@ class AccountsModel(db.Model):
 @auth.verify_password
 def verify_password(token, password):
     g.user = AccountsModel.verify_auth_token(token)
-    print(g.user)
     return g.user
 
 

@@ -1,5 +1,4 @@
 import dateutil
-import requests
 from flask_restful import reqparse, Resource
 
 from models.artist import *
@@ -20,16 +19,13 @@ class Show(Resource):
     @auth.login_required(role='admin')
     def post(self, id=None):
         data = self.getData()
-        response_place = requests.post('http://localhost:5000/place', data)
-        place_id = response_place.json()['id']
         if id is None:
             id = ShowModel.length() + 1
             while self.get(id) != 404:
                 id += 1
-
         if self.get(id) == 404:
             new_show = ShowModel(data['name'], data['date'], data['price'], data['total_available_tickets'])
-            new_show.place_id = place_id
+            new_show.place_id = data['place_id']
             try:
                 new_show.save_to_db()
                 return {'message': "Show with id [{}] added correctly".format(id)}, 200
@@ -55,7 +51,6 @@ class Show(Resource):
     @auth.login_required(role='admin')
     def put(self, id):
         data = self.getData()
-
         if self.get(id) == 404:
             self.post(id)
             return {'message': "Show with id [{}] will be created".format(id)}
@@ -65,24 +60,20 @@ class Show(Resource):
             show_to_update.date = dateutil.parser.parse(data['date'])
             show_to_update.price = data['price']
             show_to_update.total_available_tickets = data['total_available_tickets']
+            show_to_update.place_id = data['place_id']
             db.session.commit()
             return {'message': "Show with id [{}] updated".format(id)}
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
-
         # define all input parameters need and its type
-
         parser.add_argument('name', type=str, required=True, help="This field cannot be left blank")
-        parser.add_argument('place', type=str)
-        parser.add_argument('country', type=str)
-        parser.add_argument('city', type=str)
         parser.add_argument('date', type=str)
         parser.add_argument('price', type=float)
         parser.add_argument('total_available_tickets', type=int)
+        parser.add_argument('place_id', type=int)
         parser.add_argument('artist', type=str, # CAUTION!
                             action="append")  # action = "append" is needed to determine that is a list of strings
-
         data = parser.parse_args()
         return data
 

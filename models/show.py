@@ -34,7 +34,8 @@ class ShowModel(db.Model):
     def json(self):
         formatted_datetime = self.date.isoformat()
         return {'id': self.id, 'name': self.name, 'date': formatted_datetime,
-                'price': self.price, 'total_available_tickets': self.total_available_tickets}
+                'price': self.price, 'total_available_tickets': self.total_available_tickets,
+                'place_id': self.place_id}
 
     def save_to_db(self):
         db.session.add(self)

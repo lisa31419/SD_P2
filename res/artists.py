@@ -24,12 +24,10 @@ class Artist(Resource):
             artista = ArtistModel.find_by_name(data['name'])
             if artista is not None:
                 id = artista.id
-                print(id)
             else:
                 id = ArtistModel.length() + 1
 
         if self.get(id) == 404:
-            print("me he metido donde no debia")
             new_artist = ArtistModel(data['name'], data['country'])
             try:
                 for discipline in data['disciplines']:
