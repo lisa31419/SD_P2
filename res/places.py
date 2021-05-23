@@ -1,5 +1,4 @@
 from flask import jsonify
-from flask_restful import reqparse, Resource
 
 from res.account import *
 
@@ -26,7 +25,7 @@ class Place(Resource):
                 id = PlaceModel.length() + 1
 
         if self.get(id) == 404:
-            new_place = PlaceModel(data['place'], data['city'], data['country'], data['total_available_tickets'])
+            new_place = PlaceModel(data['place'], data['city'], data['country'], data['capacity'])
             try:
                 new_place.save_to_db()
                 print({'message': "Place with id [{}] added correctly".format(id)})
@@ -71,7 +70,7 @@ class Place(Resource):
         parser.add_argument('place', type=str, required=True, help="This field cannot be left blanck")
         parser.add_argument('city', type=str)
         parser.add_argument('country', type=str)
-        parser.add_argument('total_available_tickets', type=int)
+        parser.add_argument('capacity', type=int)
 
         data = parser.parse_args()
         return data

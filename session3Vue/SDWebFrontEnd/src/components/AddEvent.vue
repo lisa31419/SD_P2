@@ -197,24 +197,40 @@ export default {
     },
     onSubmit (evt) {
       evt.preventDefault()
-      const parameters = {
-        name: this.addShowForm.name,
+      const paramsPlace = {
         place: this.addShowForm.place,
         country: this.addShowForm.country,
         city: this.addShowForm.city,
-        date: this.addShowForm.date,
-        price: this.addShowForm.price,
-        total_available_tickets: this.addShowForm.total_available_tickets
+        capacity: this.addShowForm.total_available_tickets
       }
-      if (this.required(parameters)) {
-        this.addShow(parameters)
+      if (this.required(paramsPlace)) {
+        this.addPlace(paramsPlace)
       } else {
         this.errorInEventAlert()
       }
-      this.initForm()
+    },
+    addPlace (paramsPlace) {
+      const path = `http://localhost:5000/place`
+      axios.post(path, paramsPlace, {
+        auth: {username: this.token}
+      }).then((res) => {
+        console.log('Place created successfully with status ' + res.statusText)
+        const parameters = {
+          name: this.addShowForm.name,
+          date: this.addShowForm.date,
+          price: this.addShowForm.price,
+          total_available_tickets: this.addShowForm.total_available_tickets,
+          place_id: res.data.id
+        }
+        this.addShow(parameters)
+      })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     addShow (parameters) {
       const path = `http://localhost:5000/show`
+      console.log(parameters)
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
