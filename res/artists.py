@@ -11,10 +11,11 @@ class Artist(Resource):
 
     def get(self, id):
         artist = ArtistModel.find_by_id(id)
+        print(artist)
         if artist is not None:
             return {'artist': artist.json()}, 200
         else:
-            return 404
+            return {'This artists does not exist'}, 404
 
     @auth.login_required(role='admin')
     def post(self, id=None):
@@ -26,8 +27,8 @@ class Artist(Resource):
                 id = artista.id
             else:
                 id = ArtistModel.length() + 1
-
-        if self.get(id) == 404:
+        response = self.get(id)
+        if response.status_code == 404:
             new_artist = ArtistModel(data['name'], data['country'])
             try:
                 for discipline in data['disciplines']:

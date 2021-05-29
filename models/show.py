@@ -1,5 +1,6 @@
 import dateutil.parser
 
+from models.place import PlaceModel
 from res.db import db
 
 
@@ -32,10 +33,11 @@ class ShowModel(db.Model):
         self.total_available_tickets = total_available_tickets
 
     def json(self):
+        place = PlaceModel.find_by_id(self.place_id).json()
         formatted_datetime = self.date.isoformat()
         return {'id': self.id, 'name': self.name, 'date': formatted_datetime,
                 'price': self.price, 'total_available_tickets': self.total_available_tickets,
-                'place_id': self.place_id}
+                'place': place}
 
     def save_to_db(self):
         db.session.add(self)

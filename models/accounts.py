@@ -19,7 +19,7 @@ class AccountsModel(db.Model):
 
     def __init__(self, username, available_money=200, is_admin=0):
         self.username = username
-        self.availableMoney = available_money
+        self.available_money = available_money
         self.is_admin = is_admin
 
     def hash_password(self, password):
