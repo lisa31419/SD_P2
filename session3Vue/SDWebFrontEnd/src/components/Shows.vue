@@ -71,7 +71,7 @@
     <!-- Show the shows when button is deactivated-->
     <div v-else class...>
       <img alt="Card image cap" class="card-img-top" src="static/concert.png">
-      <button :disabled="is_admin.toString() === '1' || this.logged === undefined" id="gradCart" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="goToCart()"><b>View Cart</b></button>
+      <button :disabled="is_admin.toString() === '1' || logged === false" id="gradCart" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="goToCart()"><b>View Cart</b></button>
       <button id="gradInfo" class='btn text-white buttonWidth' style="float:left; margin-bottom:5px;" @click="displayInfo()"><b>Your information</b></button>
       <button href="#" v-if="this.logged" id="gradLogOut" style="float:left" class='btn buttonWidth text-white' @click="logOut()"><b>Log Out</b></button>
       <button href="#" v-else-if="!this.logged" id="gradLogIn" style="float:left" class='btn buttonWidth text-white' @click="goToLogIn()"><b>Log In</b></button>
@@ -87,18 +87,18 @@
           <div v-for="(show) in shows" :key="show.id" class="col-lg-4 col-md-6 mb-4">
             <div class="card text-center" id="gradHeaderCard" style="width: 18rem;">
               <img alt="Card image cap" class="card-img-top" style="margin-bottom: 2px" src="static/fest.jpeg">
-              <h4 class="card-header text-center text-white"><b>{{ show.name }}</b></h4>
+              <h3 class="card-header text-center text-white"><b>{{ show.name }}</b></h3>
               <div class="card-body" style="background-color: whitesmoke;">
-                <div v-for="(artist) in artistas[shows.indexOf(show)]" :key="artist.id">
-                  <h4 v-if="is_admin.toString() === '0'">{{artist.name}}</h4>
-                  <h4 v-else-if="is_admin.toString() === '1'">{{artist.name + " ID: " + artist.id}}</h4>
+                <div style="color: blueviolet" v-for="(artist) in artistas[shows.indexOf(show)]" :key="artist.id">
+                  <h4 v-if="is_admin.toString() === '0'" ><b>{{artist.name}}</b></h4>
+                  <h4 v-else-if="is_admin.toString() === '1'"><b>{{artist.name + " ID: " + artist.id}}</b></h4>
                 </div>
+                <hr v-if="artistas[shows.indexOf(show)]" class="rounded">
                 <div v-for="(place) in places[shows.indexOf(show)]" :key="place.id">
                   <h5>{{place.name}}</h5>
                   <h5>{{place.city + ','}} {{place.country}}</h5>
                 </div>
-                <h6>{{ show.city }}</h6>
-                <h6>{{ show.place }}</h6>
+                <hr class="rounded">
                 <h6>{{ show.date.substring(0,10) }}</h6>
                 <h6>{{ show.price }} €</h6>
               </div>
@@ -107,7 +107,7 @@
               <div class="card-body">
                 <h4> {{ show.total_available_tickets }} tickets available </h4>
                 <h5 v-if="is_admin.toString() === '1'" style="color: #ff9c6f "> Show con ID <b>{{shows[shows.indexOf(show)].id}}</b></h5>
-                <button v-if="is_admin.toString() === '0'" :disabled="just_shows.includes(show)" class="buttonAddToCart buttonsCardWidth btn-lg"
+                <button v-if="is_admin.toString() === '0'" :disabled="just_shows.includes(show) || logged === false" class="buttonAddToCart buttonsCardWidth btn-lg"
                           @click="addEventToCart(show)"> Add show to cart
                 </button>
                 <button v-if="is_admin.toString() === '1'" href="#" class="buttonEvents buttonsCardWidth btn-lg"  style="margin-top: 15px; margin-bottom: 10px" @click="addArtistToEvent(show)">Add Artist to Event</button>
@@ -194,6 +194,7 @@ export default {
       show_to_modify: '',
       index: 0,
       is_admin: 0,
+      logged: false,
       showsLength: 0,
       isShowingCart: false,
       newEvent: true,
@@ -218,7 +219,7 @@ export default {
       // Use sweetalert2
       if (this.is_admin.toString() === '1') {
         this.$swal('Your current information', 'You are in Administrator mode. This means you will not interact with the Cart, just the shows. Have fun!! ', 'info')
-      } else if (this.is_admin.toString() === '0' && this.logged === undefined) {
+      } else if (this.is_admin.toString() === '0' && this.logged === false) {
         this.$swal('Your current information', 'You are not logged in. This means you can not interact with the Cart, nor the Shows. Create an account if you haven´t done it yet!! ', 'warning')
       } else {
         this.$swal('Your current information', 'You have ' + this.shows_added.length + ' tickets in Cart and your current available money is ' + this.money_available + '€.', 'info')
@@ -369,8 +370,8 @@ export default {
     },
     getPlacesInShows () {
       for (let i = 0; i < this.showsLength; i++) {
-        const path = `http://localhost:5000/place/${this.shows[i].place_id}`
-        console.log(this.shows[i])
+        let IDplace = this.shows[i].place.id
+        const path = `http://localhost:5000/place/${IDplace}`
         axios.get(path)
           .then((res) => {
             this.places.push([res.data.place])
@@ -388,7 +389,11 @@ export default {
   created () {
     this.getShows()
     this.username = this.$route.query.username
-    this.logged = this.$route.query.logged
+    if (this.$route.query.logged === undefined) {
+      this.logged = false
+    } else {
+      this.logged = this.$route.query.logged
+    }
     if (this.$route.query.is_admin === undefined) {
       this.is_admin = 0
     } else {
@@ -587,5 +592,10 @@ export default {
   background-color: #A2151A;
   box-shadow: 0 5px #100000;
   transform: translateY(4px);
+}
+/* Rounded border */
+hr.rounded {
+  border-top: 4px solid #bbb;
+  border-radius: 2px;
 }
 </style>

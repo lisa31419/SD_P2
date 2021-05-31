@@ -14,10 +14,16 @@ class DisciplineModel(db.Model):
     def __init__(self, discipline):
         self.discipline = discipline
 
+    def json(self):
+        return {'discipline': self.discipline}
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
 
+    @classmethod
+    def find_by_id(cls, id):
+        return cls.query.filter(DisciplineModel.artist_id == id).all()
 
 class ArtistModel(db.Model):
     __tablename__ = 'artists'  # This is table name
@@ -31,7 +37,10 @@ class ArtistModel(db.Model):
         self.country = country
 
     def json(self):
-        return {'id': self.id, 'name': self.name, 'country': self.country}
+        disciplineList = DisciplineModel.find_by_id(self.id)
+        disciplineList = [d.discipline for d in disciplineList]
+        return {'id': self.id, 'name': self.name, 'country': self.country,
+                'disciplines': disciplineList}
 
     def save_to_db(self):
         db.session.add(self)

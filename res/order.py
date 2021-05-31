@@ -7,6 +7,8 @@ from res.db import db
 
 
 class Orders(Resource):
+
+    @auth.login_required(role='user')
     def get(self, username):
         orders = [x.json() for x in OrdersModel.get_all() if x.username == username]
         if orders is not None:
@@ -56,6 +58,7 @@ class Orders(Resource):
 
 
 class OrdersList(Resource):
+    @auth.login_required(role='admin')
     def get(self):
         return [x.json() for x in OrdersModel.get_all()]
 

@@ -58,5 +58,6 @@ class Accounts(Resource):
 
 
 class AccountsList(Resource):
+    @auth.login_required(role='admin')
     def get(self):
         return {'accounts': [x.json() for x in AccountsModel.get_all()]}
