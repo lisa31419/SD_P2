@@ -28,7 +28,8 @@ class Artist(Resource):
             else:
                 id = ArtistModel.length() + 1
         response = self.get(id)
-        if response.status_code == 404:
+        print(response)
+        if response[1] == 404:
             new_artist = ArtistModel(data['name'], data['country'])
             try:
                 for discipline in data['disciplines']:
