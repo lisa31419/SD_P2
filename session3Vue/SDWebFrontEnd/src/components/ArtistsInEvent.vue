@@ -188,7 +188,9 @@ export default {
         })
     },
     addArtistInShow (parameters) {
-      const path = `https://a3-ticketmonster.herokuapp.com/show/${this.show_to_modify.id}/artist/${this.addArtistForm.id}`
+      let artistID = this.addArtistForm.id
+      console.log(artistID)
+      const path = `https://a3-ticketmonster.herokuapp.com/show/${this.show_to_modify.id}/artist/${artistID}`
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
