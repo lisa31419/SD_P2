@@ -14,7 +14,7 @@ class Orders(Resource):
         if orders is not None:
             return {'orders': orders}, 200
         else:
-            return 404
+            return {'message': 'This order does not exist'}, 404
 
     @auth.login_required(role='user')
     def post(self, username):
@@ -22,6 +22,7 @@ class Orders(Resource):
         id_show = data['id_show']
         tickets_bought = data['tickets_bought']
         user = AccountsModel.find_by_username(username)
+
         if user.username is g.user.username:
             show = ShowModel.find_by_id(id_show)
             shows_price = show.price
@@ -60,13 +61,14 @@ class Orders(Resource):
 class OrdersList(Resource):
     @auth.login_required(role='admin')
     def get(self):
-        return [x.json() for x in OrdersModel.get_all()]
+        return {'orders': [x.json() for x in OrdersModel.get_all()]}
 
     @auth.login_required(role='user')
     def post(self, username):
         data = self.getData()
         orders = data['orders']
         user = AccountsModel.find_by_username(username)
+
         if user.username is g.user.username:
             for order in orders:
                 id_show = order['id_show']

@@ -10,14 +10,15 @@ class Accounts(Resource):
         if account is not None:
             return {'account': account.json()}, 200
         else:
-            return 404
+            return {'message': 'This account does not exist'}, 404
 
     def post(self):
         data = self.getData()
         username = data['username']
         password = data['password']
 
-        if self.get(username) == 404:
+        response = self.get(username)
+        if response[1] == 404:
             try:
                 new_user = AccountsModel(username)
                 new_user.hash_password(password)
@@ -31,7 +32,8 @@ class Accounts(Resource):
 
     @auth.login_required(role='admin')
     def delete(self, username):
-        if username is None or self.get(username) == 404:
+        response = self.get(username)
+        if username is None or response[1] == 404:
             return {'message': "Username must be in the list"}, 404
         user_to_delete = AccountsModel.find_by_username(username)
 

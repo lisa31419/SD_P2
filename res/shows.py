@@ -14,16 +14,19 @@ class Show(Resource):
         if show is not None:
             return {'show': show.json()}, 200
         else:
-            return 404
+            return {'message': 'This show does not exist'}, 404
 
     @auth.login_required(role='admin')
     def post(self, id=None):
         data = self.getData()
         if id is None:
             id = ShowModel.length() + 1
-            while self.get(id) != 404:
+            response = self.get(id)
+            while response[1] != 404:
                 id += 1
-        if self.get(id) == 404:
+
+        response = self.get(id)
+        if response[1] == 404:
             new_show = ShowModel(data['name'], data['date'], data['price'], data['total_available_tickets'])
             new_show.place_id = data['place_id']
             try:
@@ -38,7 +41,8 @@ class Show(Resource):
 
     @auth.login_required(role='admin')
     def delete(self, id):
-        if id is None or self.get(id) == 404:
+        response = self.get(id)
+        if id is None or response[1] == 404:
             return {'message': "Id must be in the list"}, 404
         show_to_delete = ShowModel.find_by_id(id)
 
@@ -51,7 +55,8 @@ class Show(Resource):
     @auth.login_required(role='admin')
     def put(self, id):
         data = self.getData()
-        if self.get(id) == 404:
+        response = self.get(id)
+        if response[1] == 404:
             self.post(id)
             return {'message': "Show with id [{}] will be created".format(id)}
         else:

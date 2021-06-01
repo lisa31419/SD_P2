@@ -230,7 +230,6 @@ export default {
     },
     addShow (parameters) {
       const path = `http://localhost:5000/show`
-      console.log(parameters)
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
@@ -281,7 +280,6 @@ export default {
         })
     },
     required (params) {
-      console.log(params)
       for (const elem in params) {
         if (params[elem.toString()].length === 0) {
           return false

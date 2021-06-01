@@ -1,4 +1,3 @@
-from flask import jsonify
 from flask_restful import reqparse, Resource
 
 from models.artist import ArtistModel, DisciplineModel
@@ -11,7 +10,6 @@ class Artist(Resource):
 
     def get(self, id):
         artist = ArtistModel.find_by_id(id)
-        print(artist)
         if artist:
             return {'artist': artist.json()}, 200
         else:
@@ -27,6 +25,7 @@ class Artist(Resource):
                 id = artista.id
             else:
                 id = ArtistModel.length() + 1
+
         response = self.get(id)
         if response[1] == 404:
             new_artist = ArtistModel(data['name'], data['country'])
@@ -47,7 +46,8 @@ class Artist(Resource):
 
     @auth.login_required(role='admin')
     def delete(self, id):
-        if id is None or self.get(id) == 404:
+        response = self.get(id)
+        if id is None or response[1] == 404:
             return {'message': "Id must be in the list"}, 404
         artists_to_delete = ArtistModel.find_by_id(id)
         artists_to_delete.delete_from_db()
@@ -56,7 +56,8 @@ class Artist(Resource):
     def put(self, id=None):
         data = self.getData()
 
-        if self.get(id) == 404:
+        response = self.get(id)
+        if response[1] == 404:
             self.post(id)
             return {'message': "Artist with id [{}] will be created".format(id)}
         else:
@@ -90,7 +91,7 @@ class Artist(Resource):
 
 class ArtistList(Resource):
     def get(self):
-        return jsonify([x.json() for x in ArtistModel.get_all()])
+        return {'artists': [x.json() for x in ArtistModel.get_all()]}
 
 
 class ArtistShowsList(Resource):
