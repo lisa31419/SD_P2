@@ -229,7 +229,7 @@ export default {
         })
     },
     addShow (parameters) {
-      const path = `http://localhost:5000/show`
+      const path = `https://git.heroku.com/a3-ticketmonster.git/show`
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
@@ -288,7 +288,7 @@ export default {
       return true
     },
     updateShow (parameters) {
-      const path = `http://localhost:5000/show/${this.editShowForm.id}`
+      const path = `https://git.heroku.com/a3-ticketmonster.git/show/${this.editShowForm.id}`
       axios.put(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {

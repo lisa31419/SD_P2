@@ -2,6 +2,7 @@ from flask_restful import reqparse, Resource
 
 from models.accounts import *
 from res.order import Orders
+from lock import lock
 
 
 class Accounts(Resource):
@@ -14,8 +15,9 @@ class Accounts(Resource):
 
     def post(self):
         data = self.getData()
-        username = data['username']
-        password = data['password']
+        with lock.lock:
+            username = data['username']
+            password = data['password']
 
         response = self.get(username)
         if response[1] == 404:
@@ -27,8 +29,9 @@ class Accounts(Resource):
             except:
                 return {"message": "An error occurred inserting the user."}, 500
 
-        else:
-            return {'message': "Error username introduced exists"}
+
+            else:
+                return {'message': "Error username introduced exists"}
 
     @auth.login_required(role='admin')
     def delete(self, username):

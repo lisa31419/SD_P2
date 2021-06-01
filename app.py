@@ -7,7 +7,10 @@ from flask_restful import Api
 from res.login import Login
 from res.account import Accounts, AccountsList
 from res.artists import Artist, ArtistList, ArtistShowsList
-from res.db import db, secret_key
+from res.db import db
+
+from flask import current_app
+
 from res.order import OrdersList, Orders
 from res.places import Place, PlaceList, PlaceShowsList
 from res.shows import Show, ShowList, ShowArtistsList, ShowArtist
@@ -19,7 +22,7 @@ app = Flask(__name__,
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = secret_key
+app.config['SECRET_KEY'] = current_app.secret_key
 
 CORS(app, resources={r'/*': {'origins': '*'}})
 

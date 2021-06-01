@@ -7,7 +7,7 @@ class DisciplineModel(db.Model):
     __tablename__ = 'disciplines'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    discipline = db.Column(db.Enum(*disciplines), nullable=False)
+    discipline = db.Column(db.Enum(*disciplines), name='disciplines_types', nullable=False)
     artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'))
     artist = db.relationship("ArtistModel")
 

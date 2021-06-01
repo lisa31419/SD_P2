@@ -17,12 +17,22 @@ class Place(Resource):
 
     def post(self, id=None):
         data = self.getData()
-        if id is None:
-            placeTemp = PlaceModel.find_by_name(data['place'])
-            if placeTemp is not None:
-                id = placeTemp.id
-            else:
-                id = PlaceModel.length() + 1
+        with lock.lock:
+            if id is None:
+                placeTemp = PlaceModel.find_by_name(data['place'])
+                if placeTemp is not None:
+                    id = placeTemp.id
+                else:
+                    id = PlaceModel.length() + 1
+
+            if self.get(id) == 404:
+                new_place = PlaceModel(data['place'], data['city'], data['country'], data['total_available_tickets'])
+                try:
+                    new_place.save_to_db()
+                    print({'message': "Place with id [{}] added correctly".format(id)})
+                    return {'id': id}, 200
+                except:
+                    return {"message": "An error occurred inserting the place."}, 500
 
         response = self.get(id)
         if response[1] == 404:
@@ -30,13 +40,8 @@ class Place(Resource):
             try:
                 new_place.save_to_db()
                 print({'message': "Place with id [{}] added correctly".format(id)})
-                return {'id': id}, 200
-            except:
-                return {"message": "An error occurred inserting the place."}, 500
 
-        else:
-            print({'message': "Place with id [{}] already exists".format(id)})
-            return {'id': id}, 200
+                return {'id': id}, 200
 
     def delete(self, id):
         response = self.get(id)
@@ -45,6 +50,7 @@ class Place(Resource):
         place_to_delete = PlaceModel.find_by_id(id)
         place_to_delete.delete_from_db()
         return {'message': "Place with id [{}] deleted correctly".format(id)}
+
 
     def put(self, id=None):
         data = self.getData()
@@ -64,6 +70,7 @@ class Place(Resource):
                 return {'message': "Place with id [{}] updated".format(id)}
             except:
                 return {'message': "Error while commiting changes"}
+
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request

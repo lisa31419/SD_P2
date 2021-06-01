@@ -1,6 +1,7 @@
 import dateutil
 from flask_restful import reqparse, Resource
 
+from lock import lock
 from models.artist import *
 from models.show import ShowModel
 from res.artists import Artist
@@ -46,11 +47,11 @@ class Show(Resource):
             return {'message': "Id must be in the list"}, 404
         show_to_delete = ShowModel.find_by_id(id)
 
-        try:
-            show_to_delete.delete_from_db()
-            return {'message': "Show with id [{}] deleted correctly".format(id)}
-        except:
-            return {'message': "Error while deleting the show"}, 500
+            try:
+                show_to_delete.delete_from_db()
+                return {'message': "Show with id [{}] deleted correctly".format(id)}
+            except:
+                return {'message': "Error while deleting the show"}, 500
 
     @auth.login_required(role='admin')
     def put(self, id):
@@ -68,6 +69,7 @@ class Show(Resource):
             show_to_update.place_id = data['place_id']
             db.session.commit()
             return {'message': "Show with id [{}] updated".format(id)}
+
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
@@ -109,45 +111,47 @@ class ShowArtist(Resource):
     @auth.login_required(role='admin')
     def post(self, id_show, id_artist=None):
         data = Artist.getData(self)
-        show_found = ShowModel.find_by_id(id_show)
-        artists_in_show = show_found.artists
-        if id_artist is None:
-            id_artist = ArtistModel.length() + 1
+        with lock.lock:
+            show_found = ShowModel.find_by_id(id_show)
+            artists_in_show = show_found.artists
+            if id_artist is None:
+                id_artist = ArtistModel.length() + 1
 
-        if ArtistModel.find_by_id(id_artist) is None:
-            new_artist = ArtistModel(data['name'], data['country'])
-            try:
-                for discipline in data['disciplines']:
+            if ArtistModel.find_by_id(id_artist) is None:
+                new_artist = ArtistModel(data['name'], data['country'])
+                try:
+                    for discipline in data['disciplines']:
 
-                    newDiscipline = DisciplineModel(discipline)
-                    newDiscipline.artist_id = id_artist
-                    newDiscipline.save_to_db()
+                        newDiscipline = DisciplineModel(discipline)
+                        newDiscipline.artist_id = id_artist
+                        newDiscipline.save_to_db()
 
-                new_artist.save_to_db()
-                artists_in_show.append(new_artist)
-                show_found.save_to_db()
-                return {'message': "Artist with id [{}] created and added correctly to the show.".format(
-                    id_artist)}, 200
-            except:
-                return {"message": "An error occurred inserting the new artist into the show."}, 500
+                    new_artist.save_to_db()
+                    artists_in_show.append(new_artist)
+                    show_found.save_to_db()
+                    return {'message': "Artist with id [{}] created and added correctly to the show.".format(
+                        id_artist)}, 200
+                except:
+                    return {"message": "An error occurred inserting the new artist into the show."}, 500
 
-        else:
-            artist_found = ArtistModel.find_by_id(id_artist)
-            try:
-                artists_in_show.append(artist_found)
-                show_found.save_to_db()
-                return {'message': "Artist with id [{}] added correctly to the show.".format(id_artist)}, 200
-            except:
-                return {"message": "An error occurred inserting the artist into the show."}, 500
+            else:
+                artist_found = ArtistModel.find_by_id(id_artist)
+                try:
+                    artists_in_show.append(artist_found)
+                    show_found.save_to_db()
+                    return {'message': "Artist with id [{}] added correctly to the show.".format(id_artist)}, 200
+                except:
+                    return {"message": "An error occurred inserting the artist into the show."}, 500
 
     def delete(self, id_show, id_artist):
-        show_found = ShowModel.find_by_id(id_show)
-        artists_in_show = show_found.artists
-        artist_to_delete = [x for x in artists_in_show if str(x.id) == id_artist]
-        if artist_to_delete:
-            artist_to_delete = ArtistModel.find_by_id(id_artist)
-            artists_in_show.remove(artist_to_delete)
-            show_found.save_to_db()
-            return {'message': "Artist with id [{}] deleted correctly from the show".format(id_artist)}, 200
-        else:
-            return {'message': "Artist must be in the show"}, 404
+        with lock.lock:
+            show_found = ShowModel.find_by_id(id_show)
+            artists_in_show = show_found.artists
+            artist_to_delete = [x for x in artists_in_show if str(x.id) == id_artist]
+            if artist_to_delete:
+                artist_to_delete = ArtistModel.find_by_id(id_artist)
+                artists_in_show.remove(artist_to_delete)
+                show_found.save_to_db()
+                return {'message': "Artist with id [{}] deleted correctly from the show".format(id_artist)}, 200
+            else:
+                return {'message': "Artist must be in the show"}, 404

@@ -87,7 +87,7 @@ export default {
       if (!this.required(parameters)) {
         this.errorInAccountAlert()
       } else {
-        const path = `http://localhost:5000/login`
+        const path = `https://git.heroku.com/a3-ticketmonster.git/login`
         axios.post(path, parameters)
           .then((res) => {
             this.logged = true
@@ -104,7 +104,7 @@ export default {
       }
     },
     getAccount () {
-      const path = `http://localhost:5000/account/${this.username}`
+      const path = `https://git.heroku.com/a3-ticketmonster.git/account/${this.username}`
       axios.get(path)
         .then((res) => {
           this.is_admin = res.data.account['is admin?']
@@ -129,7 +129,7 @@ export default {
     },
     /* PUSHING INFO */
     onSubmit () {
-      const path = `http://localhost:5000/account`
+      const path = `https://git.heroku.com/a3-ticketmonster.git/account`
       const parameters = {
         username: this.addUserForm.username,
         password: this.addUserForm.password

@@ -43,9 +43,7 @@ class Orders(Resource):
                     db.session.rollback()
                     return {"message": "An error occurred inserting the order."}, 500
             else:
-                return {"message": "You don't have enough money or there aren't tickets left."}, 400
-        else:
-            return {'message': "User error in username."}, 400
+                return {'message': "User error in username."}, 400
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
@@ -98,11 +96,12 @@ class OrdersList(Resource):
                 db.session.commit()
                 return {'order': orders}, 200
 
-            except:
-                db.session.rollback()
-                return {"message": "An error occurred committing the order."}, 500
-        else:
-            return {'message': "User error in username."}, 400
+
+                except:
+                    db.session.rollback()
+                    return {"message": "An error occurred committing the order."}, 500
+            else:
+                return {'message': "User error in username."}, 400
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
