@@ -1,25 +1,26 @@
 from flask_restful import Resource, reqparse
 
 from models.accounts import AccountsModel
-from res.db import db
+from lock import lock
 
 
 class Login(Resource):
     def post(self):
-        data = self.getData()
-        username = data['username']
-        password = data['password']
+        with lock.lock:
+            data = self.getData()
+            username = data['username']
+            password = data['password']
 
-        username_found = AccountsModel.find_by_username(username)
+            username_found = AccountsModel.find_by_username(username)
 
-        if username_found is None:
-            return {"message": "An error occurred with username's search"}, 404
+            if username_found is None:
+                return {"message": "An error occurred with username's search"}, 404
 
-        if not username_found.verify_password(password):
-            return {"message": "An error occurred inserting the user."}, 400
+            if not username_found.verify_password(password):
+                return {"message": "An error occurred inserting the user."}, 400
 
-        token = AccountsModel.generate_auth_token(username_found)
-        return {'token': token.decode('ascii')}, 200
+            token = AccountsModel.generate_auth_token(username_found)
+            return {'token': token.decode('ascii')}, 200
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request

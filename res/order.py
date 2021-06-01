@@ -4,6 +4,7 @@ from models.accounts import *
 from models.orders import OrdersModel
 from models.show import ShowModel
 from res.db import db
+from lock import lock
 
 
 class Orders(Resource):
@@ -18,34 +19,35 @@ class Orders(Resource):
 
     @auth.login_required(role='user')
     def post(self, username):
-        data = self.getData()
-        id_show = data['id_show']
-        tickets_bought = data['tickets_bought']
-        user = AccountsModel.find_by_username(username)
+        with lock.lock:
+            data = self.getData()
+            id_show = data['id_show']
+            tickets_bought = data['tickets_bought']
+            user = AccountsModel.find_by_username(username)
 
-        if user.username is g.user.username:
-            show = ShowModel.find_by_id(id_show)
-            shows_price = show.price
-            available_tickets = show.total_available_tickets
-            users_money = user.available_money
+            if user.username is g.user.username:
+                show = ShowModel.find_by_id(id_show)
+                shows_price = show.price
+                available_tickets = show.total_available_tickets
+                users_money = user.available_money
 
-            if shows_price < users_money and available_tickets > 0:
-                try:
-                    show.total_available_tickets = available_tickets - 1
-                    users_money -= (shows_price * tickets_bought)
-                    user.available_money = users_money
-                    new_order = OrdersModel(id_show, tickets_bought)
-                    user.orders.append(new_order)
-                    db.session.add(new_order)
-                    db.session.commit()
-                    return {'order': new_order.json()}
-                except:
-                    db.session.rollback()
-                    return {"message": "An error occurred inserting the order."}, 500
+                if shows_price < users_money and available_tickets > 0:
+                    try:
+                        show.total_available_tickets = available_tickets - 1
+                        users_money -= (shows_price * tickets_bought)
+                        user.available_money = users_money
+                        new_order = OrdersModel(id_show, tickets_bought)
+                        user.orders.append(new_order)
+                        db.session.add(new_order)
+                        db.session.commit()
+                        return {'order': new_order.json()}
+                    except:
+                        db.session.rollback()
+                        return {"message": "An error occurred inserting the order."}, 500
+                else:
+                    return {"message": "You don't have enough money or there aren't tickets left."}, 400
             else:
-                return {"message": "You don't have enough money or there aren't tickets left."}, 400
-        else:
-            return {'message': "User error in username."}, 400
+                return {'message': "User error in username."}, 400
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
@@ -65,44 +67,45 @@ class OrdersList(Resource):
 
     @auth.login_required(role='user')
     def post(self, username):
-        data = self.getData()
-        orders = data['orders']
-        user = AccountsModel.find_by_username(username)
+        with lock.lock:
+            data = self.getData()
+            orders = data['orders']
+            user = AccountsModel.find_by_username(username)
 
-        if user.username is g.user.username:
-            for order in orders:
-                id_show = order['id_show']
-                tickets_bought = order['tickets_bought']
-                if tickets_bought == 0:
-                    continue
+            if user.username is g.user.username:
+                for order in orders:
+                    id_show = order['id_show']
+                    tickets_bought = order['tickets_bought']
+                    if tickets_bought == 0:
+                        continue
 
-                show = ShowModel.find_by_id(id_show)
-                shows_price = show.price
-                available_tickets = show.total_available_tickets
-                users_money = user.available_money
-                if shows_price < users_money and available_tickets > 0:
-                    try:
-                        show.total_available_tickets = available_tickets - 1
-                        users_money -= (shows_price * tickets_bought)
-                        user.available_money = users_money
-                        new_order = OrdersModel(id_show, tickets_bought)
+                    show = ShowModel.find_by_id(id_show)
+                    shows_price = show.price
+                    available_tickets = show.total_available_tickets
+                    users_money = user.available_money
+                    if shows_price < users_money and available_tickets > 0:
+                        try:
+                            show.total_available_tickets = available_tickets - 1
+                            users_money -= (shows_price * tickets_bought)
+                            user.available_money = users_money
+                            new_order = OrdersModel(id_show, tickets_bought)
 
-                        user.orders.append(new_order)
-                        db.session.add(new_order)
-                    except:
-                        db.session.rollback()
-                        return {"message": "An error occurred inserting the order."}, 500
-                else:
-                    return {"message": "You don't have enough money or there aren't tickets left."}, 400
-            try:
-                db.session.commit()
-                return {'order': orders}, 200
+                            user.orders.append(new_order)
+                            db.session.add(new_order)
+                        except:
+                            db.session.rollback()
+                            return {"message": "An error occurred inserting the order."}, 500
+                    else:
+                        return {"message": "You don't have enough money or there aren't tickets left."}, 400
+                try:
+                    db.session.commit()
+                    return {'order': orders}, 200
 
-            except:
-                db.session.rollback()
-                return {"message": "An error occurred committing the order."}, 500
-        else:
-            return {'message': "User error in username."}, 400
+                except:
+                    db.session.rollback()
+                    return {"message": "An error occurred committing the order."}, 500
+            else:
+                return {'message': "User error in username."}, 400
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request

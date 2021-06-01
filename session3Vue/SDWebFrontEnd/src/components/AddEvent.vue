@@ -210,7 +210,7 @@ export default {
       }
     },
     addPlace (paramsPlace) {
-      const path = `http://localhost:5000/place`
+      const path = `https://a3-ticketmonster.herokuapp.com/place`
       axios.post(path, paramsPlace, {
         auth: {username: this.token}
       }).then((res) => {
@@ -229,7 +229,7 @@ export default {
         })
     },
     addShow (parameters) {
-      const path = `http://localhost:5000/show`
+      const path = `https://a3-ticketmonster.herokuapp.com/show`
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
@@ -261,7 +261,7 @@ export default {
       }
     },
     updatePlace (paramsPlace) {
-      const path = `http://localhost:5000/place`
+      const path = `https://a3-ticketmonster.herokuapp.com/place`
       axios.post(path, paramsPlace, {
         auth: {username: this.token}
       }).then((res) => {
@@ -288,7 +288,7 @@ export default {
       return true
     },
     updateShow (parameters) {
-      const path = `http://localhost:5000/show/${this.editShowForm.id}`
+      const path = `https://a3-ticketmonster.herokuapp.com/show/${this.editShowForm.id}`
       axios.put(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {

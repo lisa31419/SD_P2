@@ -7,19 +7,20 @@ from flask_restful import Api
 from res.login import Login
 from res.account import Accounts, AccountsList
 from res.artists import Artist, ArtistList, ArtistShowsList
-from res.db import db, secret_key
+from res.db import db
 from res.order import OrdersList, Orders
 from res.places import Place, PlaceList, PlaceShowsList
 from res.shows import Show, ShowList, ShowArtistsList, ShowArtist
 
-app = Flask(__name__,
-            static_folder="session3Vue/SDWebFrontEnd/dist/static",
-            template_folder="session3Vue/SDWebFrontEnd/dist")
+from decouple import config as config_decouple
+from config import config
 
-app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = secret_key
+app = Flask(__name__)
+environment = config['development']
+if config_decouple('PRODUCTION', cast=bool, default=False):
+    environment = config['production']
+
+app.config.from_object(environment)
 
 CORS(app, resources={r'/*': {'origins': '*'}})
 

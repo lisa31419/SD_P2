@@ -163,7 +163,7 @@ export default {
       this.initFormArtists()
     },
     addNewArtist (parameters) {
-      const path = `http://localhost:5000/artist`
+      const path = `https://a3-ticketmonster.herokuapp.com/artist`
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
@@ -188,7 +188,7 @@ export default {
         })
     },
     addArtistInShow (parameters) {
-      const path = `http://localhost:5000/show/${this.show_to_modify.id}/artist/${this.addArtistForm.id}`
+      const path = `https://a3-ticketmonster.herokuapp.com/show/${this.show_to_modify.id}/artist/${this.addArtistForm.id}`
       axios.post(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
@@ -222,7 +222,7 @@ export default {
       this.initFormDeleteArtists()
     },
     deleteArtistInShow (parameters) {
-      const path = `http://localhost:5000/show/${this.show_to_modify.id}/artist/${this.deleteArtistForm.id}`
+      const path = `https://a3-ticketmonster.herokuapp.com/show/${this.show_to_modify.id}/artist/${this.deleteArtistForm.id}`
       axios.delete(path, parameters, {
         auth: {username: this.token}
       }).then((res) => {
