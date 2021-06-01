@@ -44,13 +44,13 @@
           <div class="form-label-group">
             <br>
             <label for="inputPrice" style="color: dimgray">Price</label>
-            <input type="number" id="inputPrice" class="form-control"
+            <input type="number" min="0" oninput="validity.valid||(value=value.replace(/\D+/g, ''))" id="inputPrice" class="form-control"
                    placeholder="Enter price (€)" required v-model="addShowForm.price">
           </div>
           <div class="form-label-group">
             <br>
             <label for="inputTickets" style="color: dimgray">Total available tickets</label>
-            <input type="number" id="inputTickets" class="form-control"
+            <input type="number" min="0" oninput="validity.valid||(value=value.replace(/\D+/g, ''))" id="inputTickets" class="form-control"
                    placeholder="Enter number of total tickets available" required v-model="addShowForm.total_available_tickets">
           </div>
           <br>
@@ -76,7 +76,7 @@
         <div class="card-body" style="text-align: justify;">
           <div class="form-label-group">
             <label for="inputId" style="color: dimgray">Id</label>
-            <input type="number" id="inputId" class="form-control"
+            <input type="number" min='1' oninput="validity.valid||(value=value.replace(/\D+/g, ''))" id="inputId" class="form-control"
                    placeholder="Enter id" required autofocus v-model="editShowForm.id">
           </div>
           <div class="form-label-group">
@@ -112,13 +112,13 @@
           <div class="form-label-group">
             <br>
             <label for="inputPrice" style="color: dimgray">Price</label>
-            <input type="number" id="inputPriceEdit" class="form-control"
+            <input type="number" min="0" oninput="validity.valid||(value=value.replace(/\D+/g, ''))" id="inputPriceEdit" class="form-control"
                    placeholder="Enter price (€)" required v-model="editShowForm.price">
           </div>
           <div class="form-label-group">
             <br>
             <label for="inputTickets" style="color: dimgray">Total available tickets</label>
-            <input type="number" id="inputTicketsEdit" class="form-control"
+            <input type="number" min='0' oninput="validity.valid||(value=value.replace(/\D+/g, ''))" id="inputTicketsEdit" class="form-control"
                    placeholder="Enter number of total tickets available" required v-model="editShowForm.total_available_tickets">
           </div>
           <br>
@@ -197,21 +197,36 @@ export default {
     },
     onSubmit (evt) {
       evt.preventDefault()
-      const parameters = {
-        name: this.addShowForm.name,
+      const paramsPlace = {
         place: this.addShowForm.place,
         country: this.addShowForm.country,
         city: this.addShowForm.city,
-        date: this.addShowForm.date,
-        price: this.addShowForm.price,
-        total_available_tickets: this.addShowForm.total_available_tickets
+        capacity: this.addShowForm.total_available_tickets
       }
-      if (this.required(parameters)) {
-        this.addShow(parameters)
+      if (this.required(paramsPlace)) {
+        this.addPlace(paramsPlace)
       } else {
         this.errorInEventAlert()
       }
-      this.initForm()
+    },
+    addPlace (paramsPlace) {
+      const path = `http://localhost:5000/place`
+      axios.post(path, paramsPlace, {
+        auth: {username: this.token}
+      }).then((res) => {
+        console.log('Place created successfully with status ' + res.statusText)
+        const parameters = {
+          name: this.addShowForm.name,
+          date: this.addShowForm.date,
+          price: this.addShowForm.price,
+          total_available_tickets: this.addShowForm.total_available_tickets,
+          place_id: res.data.id
+        }
+        this.addShow(parameters)
+      })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     addShow (parameters) {
       const path = `https://git.heroku.com/a3-ticketmonster.git/show`
@@ -233,20 +248,36 @@ export default {
     },
     onSubmitUpdate (evt) {
       evt.preventDefault()
-      const parameters = {
-        name: this.editShowForm.name,
-        date: this.editShowForm.date,
-        city: this.editShowForm.city,
+      const paramsPlace = {
+        place: this.editShowForm.place,
         country: this.editShowForm.country,
-        price: parseFloat(this.editShowForm.price),
-        total_available_tickets: parseInt(this.editShowForm.total_available_tickets)
+        city: this.editShowForm.city,
+        capacity: this.editShowForm.total_available_tickets
       }
-      if (this.required(parameters)) {
-        this.updateShow(parameters)
+      if (this.required(paramsPlace)) {
+        this.updatePlace(paramsPlace)
       } else {
         this.errorInEventAlert()
       }
-      this.editingInitForm()
+    },
+    updatePlace (paramsPlace) {
+      const path = `http://localhost:5000/place`
+      axios.post(path, paramsPlace, {
+        auth: {username: this.token}
+      }).then((res) => {
+        console.log('Place updated successfully with status ' + res.statusText)
+        const parameters = {
+          name: this.editShowForm.name,
+          date: this.editShowForm.date,
+          price: this.editShowForm.price,
+          total_available_tickets: this.editShowForm.total_available_tickets,
+          place_id: res.data.id
+        }
+        this.updateShow(parameters)
+      })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     required (params) {
       for (const elem in params) {

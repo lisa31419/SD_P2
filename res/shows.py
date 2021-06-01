@@ -1,5 +1,4 @@
 import dateutil
-import requests
 from flask_restful import reqparse, Resource
 
 from lock import lock
@@ -16,38 +15,37 @@ class Show(Resource):
         if show is not None:
             return {'show': show.json()}, 200
         else:
-            return 404
+            return {'message': 'This show does not exist'}, 404
 
     @auth.login_required(role='admin')
     def post(self, id=None):
         data = self.getData()
-        with lock.lock:
-            response_place = requests.post('https://git.heroku.com/a3-ticketmonster.git/place', data)
-            place_id = response_place.json()['id']
-            if id is None:
-                id = ShowModel.length() + 1
-                while self.get(id) != 404:
-                    id += 1
+        if id is None:
+            id = ShowModel.length() + 1
+            response = self.get(id)
+            while response[1] != 404:
+                id += 1
 
-            if self.get(id) == 404:
-                new_show = ShowModel(data['name'], data['date'], data['price'], data['total_available_tickets'])
-                new_show.place_id = place_id
-                try:
-                    new_show.save_to_db()
-                    return {'message': "Show with id [{}] added correctly".format(id)}, 200
-                except:
-                    return {"message": "An error occurred inserting the show."}, 500
+        response = self.get(id)
+        if response[1] == 404:
+            new_show = ShowModel(data['name'], data['date'], data['price'], data['total_available_tickets'])
+            new_show.place_id = data['place_id']
+            try:
+                new_show.save_to_db()
+                return {'message': "Show with id [{}] added correctly".format(id)}, 200
+            except:
+                return {"message": "An error occurred inserting the show."}, 500
 
-            else:
-                self.put(id)
-                return id, 200
+        else:
+            self.put(id)
+            return id, 200
 
     @auth.login_required(role='admin')
     def delete(self, id):
-        with lock.lock:
-            if id is None or self.get(id) == 404:
-                return {'message': "Id must be in the list"}, 404
-            show_to_delete = ShowModel.find_by_id(id)
+        response = self.get(id)
+        if id is None or response[1] == 404:
+            return {'message': "Id must be in the list"}, 404
+        show_to_delete = ShowModel.find_by_id(id)
 
             try:
                 show_to_delete.delete_from_db()
@@ -58,34 +56,31 @@ class Show(Resource):
     @auth.login_required(role='admin')
     def put(self, id):
         data = self.getData()
-        with lock.lock:
-            if self.get(id) == 404:
-                self.post(id)
-                return {'message': "Show with id [{}] will be created".format(id)}
-            else:
-                show_to_update = ShowModel.find_by_id(id)
-                show_to_update.name = data['name']
-                show_to_update.date = dateutil.parser.parse(data['date'])
-                show_to_update.price = data['price']
-                show_to_update.total_available_tickets = data['total_available_tickets']
-                db.session.commit()
-                return {'message': "Show with id [{}] updated".format(id)}
+        response = self.get(id)
+        if response[1] == 404:
+            self.post(id)
+            return {'message': "Show with id [{}] will be created".format(id)}
+        else:
+            show_to_update = ShowModel.find_by_id(id)
+            show_to_update.name = data['name']
+            show_to_update.date = dateutil.parser.parse(data['date'])
+            show_to_update.price = data['price']
+            show_to_update.total_available_tickets = data['total_available_tickets']
+            show_to_update.place_id = data['place_id']
+            db.session.commit()
+            return {'message': "Show with id [{}] updated".format(id)}
+
 
     def getData(self):
         parser = reqparse.RequestParser()  # create parameters parser from request
-
         # define all input parameters need and its type
-
         parser.add_argument('name', type=str, required=True, help="This field cannot be left blank")
-        parser.add_argument('place', type=str)
-        parser.add_argument('country', type=str)
-        parser.add_argument('city', type=str)
         parser.add_argument('date', type=str)
         parser.add_argument('price', type=float)
         parser.add_argument('total_available_tickets', type=int)
+        parser.add_argument('place_id', type=int)
         parser.add_argument('artist', type=str, # CAUTION!
                             action="append")  # action = "append" is needed to determine that is a list of strings
-
         data = parser.parse_args()
         return data
 
