@@ -3,9 +3,9 @@ from flask_restful import reqparse, Resource
 
 from models.artist import *
 from models.show import ShowModel
-from res.artists import Artist
+from resources.artists import Artist
 from models.accounts import *
-from res.db import db
+from db import db
 from lock import lock
 
 

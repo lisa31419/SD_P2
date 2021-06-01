@@ -1,7 +1,7 @@
 from flask_restful import reqparse, Resource
 
 from models.accounts import *
-from res.order import Orders
+from resources.order import Orders
 from lock import lock
 
 

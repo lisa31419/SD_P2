@@ -1,7 +1,7 @@
 import dateutil.parser
 
 from models.place import PlaceModel
-from res.db import db
+from db import db
 
 
 artists_in_shows = db.Table('artists_in_shows',

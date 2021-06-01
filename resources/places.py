@@ -1,8 +1,8 @@
-from res.account import *
+from resources.account import *
 
 from models.place import PlaceModel
 from models.show import ShowModel
-from res.db import db
+from db import db
 from lock import lock
 
 

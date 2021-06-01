@@ -3,7 +3,7 @@ from flask_restful import reqparse, Resource
 from models.artist import ArtistModel, DisciplineModel
 from models.show import ShowModel
 from models.accounts import *
-from res.db import db
+from db import db
 from lock import lock
 
 

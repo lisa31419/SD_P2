@@ -4,13 +4,13 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api
 
-from res.login import Login
-from res.account import Accounts, AccountsList
-from res.artists import Artist, ArtistList, ArtistShowsList
-from res.db import db
-from res.order import OrdersList, Orders
-from res.places import Place, PlaceList, PlaceShowsList
-from res.shows import Show, ShowList, ShowArtistsList, ShowArtist
+from resources.login import Login
+from resources.account import Accounts, AccountsList
+from resources.artists import Artist, ArtistList, ArtistShowsList
+from db import db
+from resources.order import OrdersList, Orders
+from resources.places import Place, PlaceList, PlaceShowsList
+from resources.shows import Show, ShowList, ShowArtistsList, ShowArtist
 
 from decouple import config as config_decouple
 from config import config

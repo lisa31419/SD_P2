@@ -2,7 +2,7 @@ from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSign
 from passlib.apps import custom_app_context as pwd_context
 from flask_httpauth import HTTPBasicAuth
 
-from res.db import db
+from db import db
 from flask import g, current_app
 
 auth = HTTPBasicAuth()

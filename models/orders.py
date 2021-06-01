@@ -1,4 +1,4 @@
-from res.db import db
+from db import db
 
 
 class OrdersModel(db.Model):

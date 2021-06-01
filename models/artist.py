@@ -1,4 +1,4 @@
-from res.db import db
+from db import db
 
 disciplines = ('THEATRE', 'MUSIC', 'DANCE', 'CIRCUS', 'OTHER')
 
