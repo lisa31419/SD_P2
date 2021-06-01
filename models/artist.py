@@ -7,7 +7,7 @@ class DisciplineModel(db.Model):
     __tablename__ = 'disciplines'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    discipline = db.Column(db.Enum(*disciplines,name='disciplines_types'), nullable=False)
+    discipline = db.Column(db.Enum(*disciplines, name='disciplines_types'), nullable=False)
     artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'))
     artist = db.relationship("ArtistModel")
 
@@ -24,6 +24,7 @@ class DisciplineModel(db.Model):
     @classmethod
     def find_by_id(cls, id):
         return cls.query.filter(DisciplineModel.artist_id == id).all()
+
 
 class ArtistModel(db.Model):
     __tablename__ = 'artists'  # This is table name

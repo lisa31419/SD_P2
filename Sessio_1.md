@@ -118,7 +118,7 @@ Com us podeu imaginar, aquesta serà la informació que mostrarà la nostra API.
 Modifiqueu el fitxer `app.py` amb una línia per a importar aquestes dades a la nostra aplicació:
 
 ```python
-from res.data import shows, artists, places
+from resources.data import shows, artists, places
 ```
 
 Modifiqueu també la línia `app.run()` amb la línia:
@@ -192,7 +192,7 @@ Vegem aquesta estructura de recursos de classe en el nou fitxer `app.py`:
 ```python
 from flask import Flask
 from flask_restful import Resource, Api
-from res.data import artists, events
+from resources.data import artists, events
 
 app = Flask(__name__)
 api = Api(app)
